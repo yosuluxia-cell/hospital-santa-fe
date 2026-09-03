@@ -27,12 +27,8 @@
       <li><a onclick="scrollToSection('about-section')">Nosotros</a></li>
     </ul>
 
-    <!-- UNIFICADO: Botón de inicio de sesión general y acceso de admisión -->
+    <!-- UNIFICADO: Un solo botón de inicio de sesión general -->
     <div class="clean-nav-actions">
-      <button type="button" class="btn-admission-nav" onclick="openAdmissionModal()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-        <span>+ Admisión</span>
-      </button>
       <button type="button" class="btn-unified-login" onclick="showRoleLoginView('patient')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
@@ -64,13 +60,9 @@
 
         <!-- Botones de llamada a la acción principales -->
         <div class="hero-clean-buttons">
-          <button type="button" class="btn-hero-primary" onclick="openAdmissionModal()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-            <span>+ Admisión de Paciente</span>
-          </button>
-          <button type="button" class="btn-hero-secondary" onclick="openScheduleModal()">
+          <button type="button" class="btn-hero-primary" onclick="openScheduleModal()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>Reservar Cita</span>
+            <span>Reservar Cita Médica</span>
           </button>
           <button type="button" class="btn-hero-secondary" onclick="showRoleLoginView('patient')">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -772,6 +764,9 @@
       </div>
 
       <div class="doctor-profile-badge">
+        <button type="button" class="btn btn-primary btn-sm" onclick="openAdmissionModal()" style="margin-right:0.65rem; background:#0d9488; border-color:#0d9488;">
+          + Nueva Admisión y Triaje
+        </button>
         <div class="doctor-info-text">
           <div class="doctor-name">Elena Ríos</div>
           <div class="doctor-role">Enfermera Jefa • Triaje Manchester</div>
@@ -820,8 +815,11 @@
 
       <div class="main-work-grid">
         <div class="card">
-          <div class="card-header">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
             <span class="card-title">Evaluación de Signos Vitales y Triaje Manchester</span>
+            <button type="button" class="btn btn-primary btn-sm" onclick="openAdmissionModal()" style="font-size:0.8rem; padding:0.35rem 0.85rem;">
+              + Admisión Paciente Nuevo
+            </button>
           </div>
           <div class="card-body">
             <form id="nurse-triage-form" onsubmit="handleNurseSaveTriage(event)">
@@ -986,9 +984,91 @@
         </div>
       </div>
 
+      <!-- GESTIÓN TÉCNICA: CONFIGURACIÓN DEL SISTEMA Y SEGURIDAD -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
+        
+        <!-- Tarjeta 1: Parámetros del Servidor e Infraestructura Cloud -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">⚙️ Infraestructura y Parámetros del Servidor</span>
+            <span class="badge badge-success">Producción SSL</span>
+          </div>
+          <div class="card-body" style="font-size: 0.85rem; line-height: 1.8;">
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:0.4rem 0;">
+              <span style="color:var(--text-muted);">Servidor Cloud:</span>
+              <strong>Supabase PostgreSQL (Virginia, US-East)</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:0.4rem 0;">
+              <span style="color:var(--text-muted);">Cifrado en Tránsito:</span>
+              <strong style="color:#059669;">TLS 1.3 Obligatorio (DB_SSL=true)</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:0.4rem 0;">
+              <span style="color:var(--text-muted);">Cifrado en Reposo:</span>
+              <strong>AES-256 (PGCrypto Extension)</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:0.4rem 0;">
+              <span style="color:var(--text-muted);">Pool de Conexiones:</span>
+              <strong>Máx. 20 conexiones (pg pool)</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; padding:0.4rem 0;">
+              <span style="color:var(--text-muted);">Sesiones JWT:</span>
+              <strong>3,600s (1 hora) con rotación continua</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: Directorio de Cuentas y Políticas RBAC -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">👥 Directorio de Cuentas y Control de Acceso RBAC</span>
+            <span class="badge badge-purple">Políticas Activas</span>
+          </div>
+          <div class="card-body" style="padding:0; overflow-x:auto;">
+            <table class="audit-table" style="font-size:0.8rem;">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                  <th>Permisos Técnicos</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>dr.mendoza@hospital.com</strong></td>
+                  <td><span class="badge badge-primary">DOCTOR</span></td>
+                  <td>EHR, Prescripciones, CIE-10</td>
+                  <td><span class="badge badge-success">Activo</span></td>
+                </tr>
+                <tr>
+                  <td><strong>enfermera.elena@hospital.com</strong></td>
+                  <td><span class="badge badge-info">NURSE</span></td>
+                  <td>Admisión, Triaje, Signos Vitales</td>
+                  <td><span class="badge badge-success">Activo</span></td>
+                </tr>
+                <tr>
+                  <td><strong>admin@hospital.com</strong></td>
+                  <td><span class="badge badge-purple">ADMIN</span></td>
+                  <td>Seguridad TI, Auditoría, Configuración</td>
+                  <td><span class="badge badge-success">Activo</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Portal Pacientes (CI)</strong></td>
+                  <td><span class="badge badge-warning">PATIENT</span></td>
+                  <td>Citas y Recetas (Sin notas privadas)</td>
+                  <td><span class="badge badge-success">Activo</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tarjeta 3: Visor Inmutable de Auditoría HIPAA -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Trazabilidad de Accesos y Modificaciones (auditoria_accesos)</span>
+          <span class="card-title">🛡️ Trazabilidad Inmutable de Accesos y Seguridad (auditoria_accesos)</span>
           <button type="button" class="btn btn-secondary btn-sm" onclick="loadAdminAuditLogs()">
             Refrescar Logs
           </button>
@@ -1017,6 +1097,7 @@
         </div>
       </div>
     </main>
+  </div>
   <!-- ========================================================================
        MODAL: ADMISIÓN Y REGISTRO CLÍNICO DE PACIENTES NUEVOS
        ======================================================================== -->

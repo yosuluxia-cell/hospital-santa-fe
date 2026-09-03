@@ -50,9 +50,15 @@ router.patch('/appointments/:appointmentId/cancel', authenticateJWT, ClinicalCon
 
 /**
  * REGISTRO Y ADMISIÓN DE PACIENTES NUEVOS
- * Permite el registro completo de anamnesis, constantes vitales y asignación médica
+ * Estrictamente para: Personal de Enfermería, Admisiones/Recepción y Médicos.
+ * Los pacientes tienen estrictamente prohibido el acceso (403 Forbidden).
  */
-router.post('/patients/admission', ClinicalController.createAdmission);
+router.post(
+  '/patients/admission',
+  authenticateJWT,
+  authorizeRoles(UserRole.NURSE, UserRole.RECEPTIONIST, UserRole.DOCTOR, UserRole.ADMIN),
+  ClinicalController.createAdmission
+);
 
 /**
  * CONSULTA DE HISTORIA CLÍNICA (EHR / CONSULTAS)

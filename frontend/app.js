@@ -1356,6 +1356,12 @@ function showToast(message) {
 // 12. MÓDULO DE ADMISIÓN Y REGISTRO CLÍNICO DE PACIENTES NUEVOS
 // ==============================================================================
 window.openAdmissionModal = function() {
+  // Verificación estricta de Roles (RBAC): Sólo Enfermería, Admisiones y Médicos
+  if (!appState.user || !['NURSE', 'DOCTOR', 'ADMIN', 'RECEPTIONIST'].includes(appState.user.role)) {
+    showRoleLoginView('nurse', 'El módulo completo de registro, admisión y triaje de pacientes está destinado estrictamente para el personal de Enfermería, Admisiones y Médicos.');
+    return;
+  }
+
   const modal = document.getElementById('modal-patient-admission');
   if (modal) {
     modal.classList.remove('hidden');
