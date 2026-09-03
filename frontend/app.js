@@ -504,12 +504,23 @@ async function selectAppointment(appointmentId) {
   state.selectedAppointment = apt;
   renderAppointmentsList();
 
+  const vitalsText = [
+    apt.presion_arterial ? `PA: ${apt.presion_arterial}` : null,
+    apt.frecuencia_cardiaca ? `FC: ${apt.frecuencia_cardiaca} lpm` : null,
+    apt.frecuencia_respiratoria ? `FR: ${apt.frecuencia_respiratoria} rpm` : null,
+    apt.temperatura ? `Temp: ${apt.temperatura} °C` : null,
+    apt.saturacion_oxigeno ? `SpO2: ${apt.saturacion_oxigeno}%` : null,
+    apt.peso_kg ? `Peso: ${apt.peso_kg} kg` : null,
+    apt.talla_cm ? `Talla: ${apt.talla_cm} cm` : null,
+    apt.imc ? `IMC: ${apt.imc}` : null
+  ].filter(Boolean).join(' | ');
+
   document.getElementById('banner-patient-name').textContent = `${apt.paciente_nombre} ${apt.paciente_apellido}`;
   document.getElementById('banner-patient-meta').innerHTML = `
     <span><strong>Cédula:</strong> ${apt.documento_identidad}</span>
-    <span><strong>Género:</strong> ${apt.genero}</span>
-    <span><strong>Grupo Sanguíneo:</strong> ${apt.tipo_sangre || 'O+'}</span>
-    <span><strong>Modalidad:</strong> ${apt.modalidad}</span>
+    <span><strong>Sexo:</strong> ${apt.genero || 'No especificado'}</span>
+    <span><strong>Seguro:</strong> ${apt.seguro_medico || 'Particular'}</span>
+    <span><strong>Triaje:</strong> ${vitalsText || 'Sin constantes registradas'}</span>
   `;
 
   const allergyBox = document.getElementById('patient-allergy-alert');
@@ -523,9 +534,9 @@ async function selectAppointment(appointmentId) {
   await loadPatientMedicalHistory(apt.patient_id);
 
   document.getElementById('form-symptoms').value = apt.motivo || '';
-  document.getElementById('form-exam').value = 'PA: 120/80 mmHg | FC: 72 lpm | SpO2: 98% | Temp: 36.5 °C';
-  document.getElementById('form-evolution').value = 'Paciente masculino con evolución hemodinámica estable, ruidos cardíacos normofonéticos sin soplos.';
-  document.getElementById('form-private-notes').value = 'Observación facultativa confidencial: Paciente con adherencia moderada a dieta hiposódica. Monitorear perfil lipídico trimestral.';
+  document.getElementById('form-exam').value = vitalsText || 'Signos vitales estables evaluados en triaje.';
+  document.getElementById('form-evolution').value = `Paciente ingresa con motivo: ${apt.motivo || 'Evaluación médica'}. Evolución hemodinámica estable.`;
+  document.getElementById('form-private-notes').value = apt.contacto_emergencia_nombre ? `Contacto de emergencia: ${apt.contacto_emergencia_nombre} (Tel: ${apt.contacto_emergencia_telefono || 'N/A'})` : '';
 
   state.selectedDiagnoses = [];
   state.prescriptionItems = [];
@@ -536,7 +547,7 @@ async function selectAppointment(appointmentId) {
 async function loadPatientMedicalHistory(patientId) {
   const historyContainer = document.getElementById('history-content');
   if (!historyContainer) return;
-  historyContainer.innerHTML = '<div style="font-size:0.8rem; color:#64748b;">Cargando historial de hospital_db...</div>';
+  historyContainer.innerHTML = '<div style="font-size:0.8rem; color:#64748b;">Cargando historial de hospital_db en Supabase...</div>';
 
   try {
     const res = await fetch(`${API_BASE}/clinical/patients/${patientId}/consultations`, {
@@ -547,22 +558,27 @@ async function loadPatientMedicalHistory(patientId) {
     state.selectedPatientHistory = json.data || [];
 
     if (state.selectedPatientHistory.length === 0) {
-      historyContainer.innerHTML = '<div style="font-size:0.8rem; color:#64748b;">Primer ingreso: Sin consultas previas.</div>';
+      historyContainer.innerHTML = '<div style="font-size:0.8rem; color:#64748b; padding:0.75rem; background:#f8fafc; border-radius:6px;">Primer ingreso: Sin antecedentes registrados previamente.</div>';
       return;
     }
 
     historyContainer.innerHTML = state.selectedPatientHistory.map(h => {
-      const dateStr = new Date(h.fecha_consulta || h.date).toLocaleDateString('es-ES', { dateStyle: 'medium' });
+      const dateStr = new Date(h.fecha_consulta || h.date).toLocaleDateString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
       const diags = (h.diagnosticos || []).map(d => `<span class="badge badge-primary">${d.codigo_cie10}: ${d.descripcion}</span>`).join(' ');
 
       return `
-        <div style="border-left: 3px solid var(--primary); padding-left: 0.75rem; margin-bottom: 0.75rem;">
-          <div style="font-size:0.8rem; font-weight:700; color:var(--secondary);">${dateStr} - ${h.doctor_nombre || h.doctorName || 'Facultativo'} (${h.especialidad || 'Consulta Externa'})</div>
-          <div style="font-size:0.8rem; color:#334155; margin-top:0.2rem;"><strong>Evolución:</strong> ${h.evolucion_clinica || h.clinicalEvolution}</div>
-          ${diags ? `<div style="margin-top:0.35rem; display:flex; gap:0.25rem; flex-wrap:wrap;">${diags}</div>` : ''}
+        <div style="border-left: 3px solid var(--primary); padding: 0.75rem; margin-bottom: 0.75rem; background:#ffffff; border-radius:6px; box-shadow:0 1px 3px rgba(0,0,0,0.05); border:1px solid #e2e8f0; border-left-width:4px;">
+          <div style="font-size:0.82rem; font-weight:800; color:var(--secondary); display:flex; justify-content:space-between; align-items:center;">
+            <span>📅 ${dateStr} - ${h.doctor_nombre || h.doctorName || 'Atención Asistencial'}</span>
+            <span class="badge badge-teal" style="font-size:0.7rem;">${h.especialidad || 'Admisión / Triaje'}</span>
+          </div>
+          ${h.motivo_consulta ? `<div style="font-size:0.78rem; color:#0f172a; margin-top:0.35rem;"><strong>Motivo:</strong> ${h.motivo_consulta}</div>` : ''}
+          ${h.examen_fisico ? `<div style="font-size:0.78rem; color:#0284c7; margin-top:0.25rem;"><strong>🩺 Signos y Examen:</strong> ${h.examen_fisico}</div>` : ''}
+          <div style="font-size:0.78rem; color:#334155; margin-top:0.3rem; white-space:pre-line;"><strong>📋 Evolución Clínica / Anamnesis:</strong>\n${h.evolucion_clinica || h.clinicalEvolution}</div>
+          ${diags ? `<div style="margin-top:0.4rem; display:flex; gap:0.25rem; flex-wrap:wrap;">${diags}</div>` : ''}
           ${h.notas_privadas_doctor ? `
-            <div style="background:#fef3c7; border:1px dashed #d97706; padding:0.35rem; border-radius:0.3rem; margin-top:0.35rem; font-size:0.75rem; color:#92400e;">
-              🔒 <strong>Nota Privada:</strong> ${h.notas_privadas_doctor}
+            <div style="background:#fef3c7; border:1px dashed #d97706; padding:0.4rem; border-radius:0.3rem; margin-top:0.4rem; font-size:0.73rem; color:#92400e;">
+              🔒 <strong>Datos Complementarios / Contacto:</strong> ${h.notas_privadas_doctor}
             </div>` : ''}
         </div>
       `;

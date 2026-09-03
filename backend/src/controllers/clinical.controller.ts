@@ -53,9 +53,13 @@ export class ClinicalController {
     try {
       let queryText = `
         SELECT c.id, c.fecha_hora, c.modalidad, c.estado, c.motivo, c.enlace_telemedicina,
+               c.presion_arterial, c.frecuencia_cardiaca, c.frecuencia_respiratoria,
+               c.temperatura, c.saturacion_oxigeno, c.peso_kg, c.talla_cm, c.imc, c.estado_atencion,
                p.id AS patient_id, p.documento_identidad, p.nombre AS paciente_nombre,
                p.apellido AS paciente_apellido, p.fecha_nacimiento, p.genero,
                p.tipo_sangre, p.alergias, p.antecedentes_medicos, p.telefono,
+               p.medicamentos_actuales, p.antecedentes_quirurgicos, p.antecedentes_familiares,
+               p.seguro_medico, p.contacto_emergencia_nombre, p.contacto_emergencia_telefono,
                m.id AS id_medico, u.nombre || ' ' || u.apellido AS medico_nombre, m.especialidad
         FROM citas c
         JOIN pacientes p ON c.id_paciente = p.id
@@ -648,6 +652,69 @@ export class ClinicalController {
           weightKg ? parseFloat(weightKg) : null,
           heightCm ? parseFloat(heightCm) : null,
           bmi ? parseFloat(bmi) : null
+        ]
+      );
+
+      const citaId = citaRes.rows[0].id;
+
+      // 4. Registrar de inmediato en la Historia Clínica Electrónica (registros_medicos)
+      const examenFisicoAdmision = [
+        bloodPressure ? `PA: ${bloodPressure}` : null,
+        heartRate ? `FC: ${heartRate} lpm` : null,
+        respiratoryRate ? `FR: ${respiratoryRate} rpm` : null,
+        temperature ? `Temp: ${temperature} °C` : null,
+        oxygenSaturation ? `SpO2: ${oxygenSaturation}%` : null,
+        weightKg ? `Peso: ${weightKg} kg` : null,
+        heightCm ? `Talla: ${heightCm} cm` : null,
+        bmi ? `IMC: ${bmi} kg/m²` : null
+      ].filter(Boolean).join(' | ');
+
+      const evolucionAdmision = [
+        `Ingreso por Admisión y Triaje de Enfermería.`,
+        reason ? `• Motivo de Consulta: ${reason}` : null,
+        criticalAllergies ? `• Alergias Críticas: ${criticalAllergies}` : `• Alergias: Ninguna referida`,
+        chronicConditions ? `• Patologías Crónicas: ${chronicConditions}` : null,
+        currentMedications ? `• Medicamentos Actuales: ${currentMedications}` : null,
+        surgicalHistory ? `• Antecedentes Quirúrgicos: ${surgicalHistory}` : null,
+        familyHistory ? `• Antecedentes Familiares: ${familyHistory}` : null,
+        insuranceProvider ? `• Modalidad / Seguro: ${insuranceProvider}` : null,
+        `• Estado Inicial: ${status || 'EN_ESPERA'}`
+      ].filter(Boolean).join('\n');
+
+      const notasPrivadasAdmision = [
+        emergencyContactName ? `Contacto de Emergencia: ${emergencyContactName} (${emergencyContactRelationship || 'Familiar'}) - Tel: ${emergencyContactPhone || 'N/A'}` : null,
+        address ? `Dirección de Residencia: ${address}` : null,
+        phone ? `Teléfono de Contacto: ${phone}` : null
+      ].filter(Boolean).join(' | ');
+
+      const recordRes = await client.query(
+        `INSERT INTO registros_medicos (
+          id_cita, id_paciente, id_medico, fecha_consulta, motivo_consulta, examen_fisico, evolucion_clinica, notas_privadas_doctor
+        ) VALUES (
+          $1, $2, $3, NOW(), $4, $5, $6, $7
+        ) RETURNING id, fecha_consulta`,
+        [
+          citaId,
+          patient.id,
+          assignedDoctorId,
+          reason || 'Admisión y triaje hospitalario',
+          examenFisicoAdmision || 'Signos vitales evaluados en triaje',
+          evolucionAdmision,
+          notasPrivadasAdmision || 'Registro inicial de admisión'
+        ]
+      );
+
+      // 5. Registrar diagnóstico CIE-10 inicial de admisión en el expediente
+      await client.query(
+        `INSERT INTO diagnosticos_cie (
+          id_registro_medico, codigo_cie10, descripcion, tipo, es_principal
+        ) VALUES (
+          $1, $2, $3, 'PRESUNTIVO', TRUE
+        )`,
+        [
+          recordRes.rows[0].id,
+          'Z00.0',
+          `Admisión General y Triaje: ${reason || 'Evaluación Médica Inicial'}`
         ]
       );
 
