@@ -1,0 +1,25 @@
+{
+  "name": "hospital-santa-fe-emr",
+  "version": "1.0.0",
+  "description": "Sistema de Gestión Hospitalaria & EMR - Hospital de Santa Fe (Distrito Santa Fe) - Municipio de San Carlos",
+  "main": "backend/dist/server.js",
+  "scripts": {
+    "build": "cd backend && npm install && npm run build",
+    "start": "cd backend && npm run start",
+    "db:init": "cd backend && npm run db:init"
+  },
+  "keywords": [
+    "healthtech",
+    "emr",
+    "hospital",
+    "santa-fe",
+    "ichilo",
+    "san-carlos",
+    "supabase",
+    "postgresql",
+    "rbac",
+    "hipaa"
+  ],
+  "author": "Hospital de Santa Fe - Equipo de Tecnología",
+  "license": "ISC"
+}

@@ -1,0 +1,42 @@
+{
+  "name": "hospital-emr-backend",
+  "version": "1.0.0",
+  "description": "Backend API para Sistema de Gestión Hospitalaria y EMR con RBAC y HIPAA Compliance",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "db:init": "tsx src/database/init-db.ts"
+  },
+  "keywords": [
+    "healthtech",
+    "emr",
+    "hms",
+    "rbac",
+    "hipaa",
+    "typescript"
+  ],
+  "author": "HealthTech Systems Architect",
+  "license": "ISC",
+  "dependencies": {
+    "@types/pg": "^8.23.1",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.14.9",
+    "isomorphic-git": "^1.41.9",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.2"
+  }
+}
