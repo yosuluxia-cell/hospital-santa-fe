@@ -1146,25 +1146,15 @@
                 <div id="adm-age-display" class="calc-badge-age">Edad: Selecciona fecha</div>
               </div>
               <div class="form-group">
-                <label class="form-label" for="adm-sex">Sexo Biológico *</label>
+                <label class="form-label" for="adm-sex">Sexo *</label>
                 <select id="adm-sex" class="form-select" required>
                   <option value="Masculino">Masculino</option>
                   <option value="Femenino">Femenino</option>
-                  <option value="Intersexual">Intersexual</option>
                 </select>
               </div>
             </div>
 
             <div class="admission-grid-3">
-              <div class="form-group">
-                <label class="form-label" for="adm-gender">Identidad de Género</label>
-                <select id="adm-gender" class="form-select">
-                  <option value="Cisgénero">Cisgénero</option>
-                  <option value="Transgénero">Transgénero</option>
-                  <option value="No Binario">No Binario</option>
-                  <option value="Otro">Otro / Prefiero no decir</option>
-                </select>
-              </div>
               <div class="form-group">
                 <label class="form-label" for="adm-phone">Teléfono de Contacto</label>
                 <input type="tel" id="adm-phone" class="form-input" placeholder="ej. 78912345">
@@ -1173,22 +1163,20 @@
                 <label class="form-label" for="adm-email">Correo Electrónico</label>
                 <input type="email" id="adm-email" class="form-input" placeholder="paciente@correo.com">
               </div>
-            </div>
-
-            <div class="admission-grid-2">
-              <div class="form-group">
-                <label class="form-label" for="adm-address">Dirección de Residencia</label>
-                <input type="text" id="adm-address" class="form-input" placeholder="Distrito Santa Fe, Barrio / Calle...">
-              </div>
               <div class="form-group">
                 <label class="form-label" for="adm-insurance">Seguro Médico / Modalidad *</label>
                 <select id="adm-insurance" class="form-select" required>
-                  <option value="SUS / Seguro Universal">SUS / Seguro Universal de Salud (Gratuito)</option>
+                  <option value="SUS / Seguro Universal">SUS / Seguro Universal (Gratuito)</option>
                   <option value="Caja Nacional de Salud (CNS)">Caja Nacional de Salud (CNS)</option>
                   <option value="Seguro Privado">Seguro Privado / Convenio</option>
-                  <option value="Consulta Particular">Consulta Particular / Arancel Hospitalario</option>
+                  <option value="Consulta Particular">Consulta Particular / Arancel</option>
                 </select>
               </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="adm-address">Dirección de Residencia</label>
+              <input type="text" id="adm-address" class="form-input" placeholder="Distrito Santa Fe, Barrio / Calle...">
             </div>
 
             <!-- Contacto de Emergencia -->
