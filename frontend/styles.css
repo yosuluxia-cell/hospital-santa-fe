@@ -1350,6 +1350,112 @@ body {
   .auth-segmented-control { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ==========================================================================
+   8. MÓDULO DE ADMISIÓN Y REGISTRO CLÍNICO DE PACIENTES NUEVOS
+   ========================================================================== */
+.btn-admission-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btn-admission-nav:hover {
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+
+.admission-modal-content {
+  max-width: 880px;
+  width: 95%;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.admission-modal-body {
+  overflow-y: auto;
+  max-height: calc(92vh - 145px);
+  padding: 1.5rem;
+  background: #f8fafc;
+}
+
+.admission-section-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.admission-section-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--secondary);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.step-num {
+  width: 26px;
+  height: 26px;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.admission-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.admission-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+.vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.calc-badge-age {
+  font-size: 0.8rem;
+  color: #0369a1;
+  font-weight: 800;
+  margin-top: 0.35rem;
+  background: #e0f2fe;
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 768px) {
+  .admission-grid-2, .admission-grid-3 { grid-template-columns: 1fr; }
+  .vitals-grid { grid-template-columns: 1fr 1fr; }
+}
+
 @media (max-width: 640px) {
   .clean-main-nav { padding: 0.75rem 1rem; }
   .clean-brand-subtitle { display: none; }

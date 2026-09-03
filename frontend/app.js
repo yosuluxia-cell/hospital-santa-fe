@@ -1351,3 +1351,212 @@ function showToast(message) {
     toast.classList.add('hidden');
   }, 4500);
 }
+
+// ==============================================================================
+// 12. MÓDULO DE ADMISIÓN Y REGISTRO CLÍNICO DE PACIENTES NUEVOS
+// ==============================================================================
+window.openAdmissionModal = function() {
+  const modal = document.getElementById('modal-patient-admission');
+  if (modal) {
+    modal.classList.remove('hidden');
+    loadDoctorsForAdmission();
+  }
+};
+
+window.closeAdmissionModal = function() {
+  const modal = document.getElementById('modal-patient-admission');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+};
+
+window.handleAdmissionDobChange = function(dobString) {
+  const ageDisplay = document.getElementById('adm-age-display');
+  if (!ageDisplay || !dobString) return;
+
+  const dob = new Date(dobString);
+  const today = new Date();
+  
+  if (isNaN(dob.getTime())) {
+    ageDisplay.textContent = 'Edad: Fecha inválida';
+    return;
+  }
+
+  let years = today.getFullYear() - dob.getFullYear();
+  let m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    years--;
+  }
+
+  if (years < 0) {
+    ageDisplay.textContent = 'Edad: Fecha en el futuro';
+  } else if (years === 0) {
+    let months = (today.getFullYear() - dob.getFullYear()) * 12 + (today.getMonth() - dob.getMonth());
+    if (today.getDate() < dob.getDate()) months--;
+    ageDisplay.textContent = `Edad: ${Math.max(0, months)} meses (Lactante)`;
+  } else {
+    ageDisplay.textContent = `Edad: ${years} años`;
+  }
+};
+
+window.calculateAdmissionBmi = function() {
+  const weightInput = document.getElementById('adm-weight');
+  const heightInput = document.getElementById('adm-height');
+  const badge = document.getElementById('adm-bmi-badge');
+  if (!badge) return;
+
+  const weight = parseFloat(weightInput?.value);
+  const height = parseFloat(heightInput?.value);
+
+  if (!weight || !height || height <= 0 || weight <= 0) {
+    badge.className = 'badge badge-primary';
+    badge.textContent = 'IMC: Ingrese peso y talla';
+    return;
+  }
+
+  const heightM = height / 100;
+  const bmi = (weight / (heightM * heightM)).toFixed(1);
+
+  if (bmi < 18.5) {
+    badge.className = 'badge badge-warning';
+    badge.textContent = `IMC: ${bmi} kg/m² • Bajo Peso (Desnutrición)`;
+  } else if (bmi < 25) {
+    badge.className = 'badge badge-success';
+    badge.textContent = `IMC: ${bmi} kg/m² • Peso Normal (Saludable)`;
+  } else if (bmi < 30) {
+    badge.className = 'badge badge-warning';
+    badge.textContent = `IMC: ${bmi} kg/m² • Sobrepeso (Riesgo Moderado)`;
+  } else if (bmi < 35) {
+    badge.className = 'badge badge-danger';
+    badge.textContent = `IMC: ${bmi} kg/m² • Obesidad Grado I`;
+  } else {
+    badge.className = 'badge badge-danger';
+    badge.textContent = `IMC: ${bmi} kg/m² • Obesidad Severa / Mórbida`;
+  }
+};
+
+window.handleAdmissionAllergyWarning = function(allergyVal) {
+  const alertBox = document.getElementById('adm-allergy-alert');
+  if (!alertBox) return;
+
+  const trimmed = allergyVal.trim().toLowerCase();
+  if (trimmed.length > 0 && trimmed !== 'ninguna' && trimmed !== 'niega' && trimmed !== 'no') {
+    alertBox.classList.remove('hidden');
+    alertBox.innerHTML = `🚨 <strong>Alergia Detectada:</strong> Se activará el protocolo de seguridad y brazalete de alerta farmacológica.`;
+  } else {
+    alertBox.classList.add('hidden');
+  }
+};
+
+window.filterDoctorsBySpecialty = function(specialty) {
+  const doctorSelect = document.getElementById('adm-doctor');
+  if (!doctorSelect) return;
+
+  Array.from(doctorSelect.options).forEach(opt => {
+    if (opt.text.toLowerCase().includes(specialty.toLowerCase())) {
+      opt.selected = true;
+    }
+  });
+};
+
+async function loadDoctorsForAdmission() {
+  const select = document.getElementById('adm-doctor');
+  if (!select) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/clinical/doctors`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.data && data.data.length > 0) {
+        select.innerHTML = data.data.map(d => `
+          <option value="${d.id}">${d.nombre_completo} (${d.especialidad})</option>
+        `).join('');
+      }
+    }
+  } catch (e) {
+    console.warn('Usando lista de médicos inicial:', e);
+  }
+}
+
+window.handlePatientAdmissionSubmit = async function(event) {
+  event.preventDefault();
+  const btn = document.getElementById('btn-save-admission');
+  if (btn) btn.disabled = true;
+
+  const weight = parseFloat(document.getElementById('adm-weight')?.value);
+  const height = parseFloat(document.getElementById('adm-height')?.value);
+  let bmi = null;
+  if (weight && height && height > 0) {
+    const heightM = height / 100;
+    bmi = parseFloat((weight / (heightM * heightM)).toFixed(1));
+  }
+
+  const payload = {
+    // 1. Identificación y Admisión
+    firstName: document.getElementById('adm-first-name')?.value,
+    lastName: document.getElementById('adm-last-name')?.value,
+    nationalId: document.getElementById('adm-national-id')?.value,
+    dateOfBirth: document.getElementById('adm-dob')?.value,
+    biologicalSex: document.getElementById('adm-sex')?.value,
+    genderIdentity: document.getElementById('adm-gender')?.value,
+    phone: document.getElementById('adm-phone')?.value,
+    email: document.getElementById('adm-email')?.value,
+    address: document.getElementById('adm-address')?.value,
+    insuranceProvider: document.getElementById('adm-insurance')?.value,
+    emergencyContactName: document.getElementById('adm-emerg-name')?.value,
+    emergencyContactRelationship: document.getElementById('adm-emerg-rel')?.value,
+    emergencyContactPhone: document.getElementById('adm-emerg-phone')?.value,
+
+    // 2. Motivo y Signos Vitales (Triaje)
+    reason: document.getElementById('adm-reason')?.value,
+    bloodPressure: document.getElementById('adm-bp')?.value,
+    heartRate: document.getElementById('adm-hr')?.value ? parseInt(document.getElementById('adm-hr').value, 10) : null,
+    respiratoryRate: document.getElementById('adm-rr')?.value ? parseInt(document.getElementById('adm-rr').value, 10) : null,
+    temperature: document.getElementById('adm-temp')?.value ? parseFloat(document.getElementById('adm-temp').value) : null,
+    oxygenSaturation: document.getElementById('adm-spo2')?.value ? parseFloat(document.getElementById('adm-spo2').value) : null,
+    weightKg: weight || null,
+    heightCm: height || null,
+    bmi: bmi,
+
+    // 3. Antecedentes (Anamnesis)
+    criticalAllergies: document.getElementById('adm-allergies')?.value,
+    chronicConditions: document.getElementById('adm-chronic')?.value,
+    currentMedications: document.getElementById('adm-meds')?.value,
+    surgicalHistory: document.getElementById('adm-surgeries')?.value,
+    familyHistory: document.getElementById('adm-family')?.value,
+
+    // 4. Asignación y Destino
+    specialty: document.getElementById('adm-specialty')?.value,
+    doctorId: document.getElementById('adm-doctor')?.value,
+    status: document.getElementById('adm-status')?.value
+  };
+
+  try {
+    const res = await fetch(`${API_BASE}/clinical/patients/admission`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(appState.token ? { 'Authorization': `Bearer ${appState.token}` } : {})
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (res.ok && data.success) {
+      closeAdmissionModal();
+      document.getElementById('form-patient-admission')?.reset();
+      showToast(`🎉 Paciente ${payload.firstName} ${payload.lastName} (${payload.nationalId}) admitido exitosamente en el Hospital de Santa Fe.`);
+      
+      if (appState.user && appState.user.role === 'DOCTOR') {
+        loadDoctorAppointments();
+      }
+    } else {
+      alert('Error en admisión: ' + (data.message || 'Error al procesar la solicitud.'));
+    }
+  } catch (err) {
+    console.error('Error al admitir paciente:', err);
+    alert('Error de conexión al registrar la admisión.');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+};

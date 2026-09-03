@@ -49,6 +49,12 @@ router.post('/appointments', authenticateJWT, ClinicalController.scheduleAppoint
 router.patch('/appointments/:appointmentId/cancel', authenticateJWT, ClinicalController.cancelAppointment);
 
 /**
+ * REGISTRO Y ADMISIÓN DE PACIENTES NUEVOS
+ * Permite el registro completo de anamnesis, constantes vitales y asignación médica
+ */
+router.post('/patients/admission', ClinicalController.createAdmission);
+
+/**
  * CONSULTA DE HISTORIA CLÍNICA (EHR / CONSULTAS)
  * - Requiere token válido (authenticateJWT).
  * - Control de Roles: Médicos, Enfermeros y Pacientes.

@@ -491,4 +491,200 @@ export class ClinicalController {
       res.status(500).json({ success: false, message: 'Error al obtener médicos.' });
     }
   }
+
+  /**
+   * Registro y Admisión Completa de Pacientes Nuevos
+   */
+  public static async createAdmission(req: Request, res: Response): Promise<void> {
+    const {
+      firstName,
+      lastName,
+      nationalId,
+      dateOfBirth,
+      biologicalSex,
+      genderIdentity,
+      phone,
+      email,
+      address,
+      emergencyContactName,
+      emergencyContactRelationship,
+      emergencyContactPhone,
+      insuranceProvider,
+      reason,
+      // Triaje y signos vitales
+      bloodPressure,
+      heartRate,
+      respiratoryRate,
+      temperature,
+      oxygenSaturation,
+      weightKg,
+      heightCm,
+      bmi,
+      // Anamnesis
+      criticalAllergies,
+      chronicConditions,
+      currentMedications,
+      surgicalHistory,
+      familyHistory,
+      // Asignación
+      doctorId,
+      status // EN_ESPERA, TRIAJE, EN_CONSULTA, OBSERVACION, FINALIZADA
+    } = req.body;
+
+    if (!firstName || !lastName || !nationalId) {
+      res.status(400).json({ success: false, message: 'Nombres, apellidos y cédula/documento son obligatorios.' });
+      return;
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // 1. Insertar o actualizar paciente
+      const patientRes = await client.query(
+        `INSERT INTO pacientes (
+          documento_identidad, nombre, apellido, fecha_nacimiento, genero,
+          sexo_biologico, identidad_genero, telefono, email, direccion,
+          contacto_emergencia_nombre, contacto_emergencia_parentesco, contacto_emergencia_telefono,
+          seguro_medico, alergias, antecedentes_medicos, medicamentos_actuales,
+          antecedentes_quirurgicos, antecedentes_familiares, peso_kg, talla_cm, imc, estado_atencion
+        ) VALUES (
+          $1, $2, $3, $4, $5,
+          $6, $7, $8, $9, $10,
+          $11, $12, $13,
+          $14, $15, $16, $17,
+          $18, $19, $20, $21, $22, $23
+        )
+        ON CONFLICT (documento_identidad) DO UPDATE SET
+          nombre = EXCLUDED.nombre,
+          apellido = EXCLUDED.apellido,
+          fecha_nacimiento = EXCLUDED.fecha_nacimiento,
+          sexo_biologico = EXCLUDED.sexo_biologico,
+          identidad_genero = EXCLUDED.identidad_genero,
+          telefono = EXCLUDED.telefono,
+          email = EXCLUDED.email,
+          direccion = EXCLUDED.direccion,
+          contacto_emergencia_nombre = EXCLUDED.contacto_emergencia_nombre,
+          contacto_emergencia_parentesco = EXCLUDED.contacto_emergencia_parentesco,
+          contacto_emergencia_telefono = EXCLUDED.contacto_emergencia_telefono,
+          seguro_medico = EXCLUDED.seguro_medico,
+          alergias = EXCLUDED.alergias,
+          antecedentes_medicos = EXCLUDED.antecedentes_medicos,
+          medicamentos_actuales = EXCLUDED.medicamentos_actuales,
+          antecedentes_quirurgicos = EXCLUDED.antecedentes_quirurgicos,
+          antecedentes_familiares = EXCLUDED.antecedentes_familiares,
+          peso_kg = EXCLUDED.peso_kg,
+          talla_cm = EXCLUDED.talla_cm,
+          imc = EXCLUDED.imc,
+          estado_atencion = EXCLUDED.estado_atencion,
+          fecha_actualizacion = NOW()
+        RETURNING *`,
+        [
+          nationalId.trim(),
+          firstName.trim(),
+          lastName.trim(),
+          dateOfBirth || '2000-01-01',
+          biologicalSex || 'Masculino',
+          biologicalSex || 'Masculino',
+          genderIdentity || biologicalSex || 'Masculino',
+          phone || '',
+          email || '',
+          address || 'Distrito Santa Fe',
+          emergencyContactName || '',
+          emergencyContactRelationship || '',
+          emergencyContactPhone || '',
+          insuranceProvider || 'Particular',
+          criticalAllergies || '',
+          chronicConditions || '',
+          currentMedications || '',
+          surgicalHistory || '',
+          familyHistory || '',
+          weightKg ? parseFloat(weightKg) : null,
+          heightCm ? parseFloat(heightCm) : null,
+          bmi ? parseFloat(bmi) : null,
+          status || 'EN_ESPERA'
+        ]
+      );
+
+      const patient = patientRes.rows[0];
+
+      // 2. Buscar o asignar médico predeterminado si no se envió
+      let assignedDoctorId = doctorId;
+      if (!assignedDoctorId) {
+        const docRes = await client.query(`SELECT id FROM medicos WHERE activo = TRUE LIMIT 1`);
+        if (docRes.rows.length > 0) assignedDoctorId = docRes.rows[0].id;
+      }
+
+      // 3. Mapeo de estados de cita
+      const appointmentStatusMap: Record<string, string> = {
+        'EN_ESPERA': 'PROGRAMADA',
+        'TRIAJE': 'CONFIRMADA',
+        'EN_CONSULTA': 'EN_ATENCION',
+        'OBSERVACION': 'EN_ATENCION',
+        'FINALIZADA': 'ATENDIDA'
+      };
+
+      const citaRes = await client.query(
+        `INSERT INTO citas (
+          id_paciente, id_medico, fecha_hora, modalidad, estado, estado_atencion, motivo,
+          presion_arterial, frecuencia_cardiaca, frecuencia_respiratoria,
+          temperatura, saturacion_oxigeno, peso_kg, talla_cm, imc
+        ) VALUES (
+          $1, $2, NOW(), 'PRESENCIAL', $3, $4, $5,
+          $6, $7, $8,
+          $9, $10, $11, $12, $13
+        ) RETURNING *`,
+        [
+          patient.id,
+          assignedDoctorId,
+          appointmentStatusMap[status] || 'PROGRAMADA',
+          status || 'EN_ESPERA',
+          reason || 'Admisión general de paciente',
+          bloodPressure || null,
+          heartRate ? parseInt(heartRate, 10) : null,
+          respiratoryRate ? parseInt(respiratoryRate, 10) : null,
+          temperature ? parseFloat(temperature) : null,
+          oxygenSaturation ? parseFloat(oxygenSaturation) : null,
+          weightKg ? parseFloat(weightKg) : null,
+          heightCm ? parseFloat(heightCm) : null,
+          bmi ? parseFloat(bmi) : null
+        ]
+      );
+
+      await client.query('COMMIT');
+
+      // 4. Registrar evento de auditoría
+      const actor = req.user;
+      await auditService.log({
+        actorId: actor?.userId || patient.id,
+        actorEmail: actor?.email || 'admision@hospital-santafe.gob.bo',
+        actorRole: actor?.role || UserRole.ADMIN,
+        action: AuditAction.CREATE,
+        resource: 'PACIENTES_ADMISIÓN',
+        resourceId: patient.id,
+        ipAddress: req.ip || req.socket.remoteAddress || '127.0.0.1',
+        details: {
+          paciente: `${patient.nombre} ${patient.apellido}`,
+          documento: patient.documento_identidad,
+          estado_atencion: status || 'EN_ESPERA',
+          motivo: reason
+        }
+      });
+
+      res.status(201).json({
+        success: true,
+        message: 'Paciente admitido y registrado exitosamente en Supabase.',
+        data: {
+          patient,
+          appointment: citaRes.rows[0]
+        }
+      });
+    } catch (err: any) {
+      await client.query('ROLLBACK');
+      console.error('[ADMISSION ERROR] Error al admitir paciente:', err);
+      res.status(500).json({ success: false, message: 'Error en admisión: ' + err.message });
+    } finally {
+      client.release();
+    }
+  }
 }
