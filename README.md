@@ -1,76 +1,68 @@
-# Sistema de Gestión Hospitalaria Web & EMR (Hospital Management System)
+# Hospital de Santa Fe (Distrito Santa Fe)
+## Hospital Municipal Ichilo de San Carlos - Municipio de San Carlos
+### Sistema de Gestión Hospitalaria & Historia Clínica Electrónica (EMR / EHR)
 
-Un sistema clínico, hospitalario y de historia clínica electrónica (EHR/EMR) diseñado con arquitectura de grado empresarial, control de accesos basado en roles (**RBAC**), trazabilidad inmutable (**Audit Trail**) y estrictas normas de ética y privacidad médica (**HIPAA / GDPR**).
-
----
-
-## 1. Arquitectura de Base de Datos (PostgreSQL)
-
-El esquema relacional completo se encuentra codificado en [`backend/src/database/schema.sql`](file:///C:/Users/DELL/.gemini/antigravity/scratch/hospital-emr-system/backend/src/database/schema.sql).
-
-### Principales Módulos y Entidades:
-1. **Identidad y Accesos**:
-   - `users`: Cuentas, credenciales cifradas con bcrypt/Argon2, roles (`user_role`), bloqueo por intentos fallidos y soporte MFA.
-   - `medical_staff`: Perfil clínico vinculado a un usuario (matrícula médica, departamento, especialidad).
-   - `patients`: Expediente demográfico y clínico basal (cédula, tipo de sangre, alergias críticas, antecedentes). Separación clara entre datos administrativos (PII) y clínicos (PHI).
-2. **Estructura Hospitalaria y Camas**:
-   - `departments`: Urgencias, Consultas Externas, UCI, Hospitalización, Laboratorio, Farmacia, etc.
-   - `specialties`: Cardiología, Pediatría, Traumatología, etc.
-   - `beds` & `bed_assignments`: Gestión de camas por sala, control de ocupación, aislamiento y traslados.
-3. **Atención Médica y Urgencias**:
-   - `triage_records`: Triaje de Urgencias (Sistema Manchester / Clasificación por 5 colores de severidad: Rojo a Azul, toma de signos vitales, escala Glasgow).
-   - `appointments`: Citas programadas, presenciales o telemedicina con enlace seguro.
-   - `medical_consultations`: Encuentro clínico (Anamnesis, Examen Físico, Evolución y `doctor_private_notes` para notas médicas confidenciales).
-   - `diagnoses`: Diagnósticos codificados en **CIE-10 / CIE-11** (presuntivo, confirmado, diferencial).
-4. **Servicios Auxiliares**:
-   - `prescriptions` & `prescription_items`: Receta médica electrónica con dosis, posología y control de caducidad.
-   - `pharmacy_items` & `medication_dispensations`: Kardex de farmacia hospitalaria, lotes, stock mínimo y registro de dispensación por farmacéutico.
-   - `lab_imaging_orders` & `lab_imaging_results`: Solicitud de análisis e imágenes diagnósticas, carga de resultados numéricos/JSON, valores de referencia y verificación de integridad criptográfica (SHA-256) de adjuntos.
-5. **Administración y Auditoría Inmutable**:
-   - `invoices`: Facturación de consultas, copagos y seguros.
-   - `audit_logs`: Registro inmutable de cada lectura o mutación sobre datos médicos protegidos (quién, cuándo, desde qué IP, qué paciente fue consultado y si se activó el protocolo Break-Glass).
+Sistema clínico hospitalario de atención médica integral y gestión de expedientes digitales con control de acceso basado en roles (**RBAC**), trazabilidad inmutable (**Auditoría HIPAA**) y base de datos **PostgreSQL en la Nube (Supabase)**.
 
 ---
 
-## 2. Matriz de Roles y Reglas Éticas (RBAC)
+## 🏥 Características Principales
 
-| Rol | Consultar Citas / Agenda | Historia Clínica (EHR) | Ver Notas Privadas del Médico | Diagnosticar / Recetar | Laboratorio / Imagen | Dispensar Farmacia | Alta / Caja | Audit Logs |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **PATIENT** | Solo propias | Solo público propio | ❌ **PROHIBIDO** | ❌ No | Solo ver sus resultados | ❌ No | Ver sus pagos | ❌ No |
-| **DOCTOR** | Su agenda diaria | Lectura/Escritura asignados | ✅ **PERMITIDO** | ✅ Sí | Solicita exámenes | ❌ No | ❌ No | ❌ No |
-| **NURSE** | Pacientes del servicio | Signos vitales / Triaje | ❌ No | ❌ No | Consulta resultados | ❌ No | ❌ No | ❌ No |
-| **LAB_TECH / RADIO**| Solo órdenes del área | ❌ No | ❌ No | ❌ No | ✅ Sube resultados/archivos | ❌ No | ❌ No | ❌ No |
-| **PHARMACIST** | ❌ No | ❌ No | ❌ No | ❌ No | ❌ No | ✅ Valida y despacha | ❌ No | ❌ No |
-| **RECEPTIONIST** | Todas las agendas | ❌ No | ❌ No | ❌ No | ❌ No | ❌ No | ✅ Sí | ❌ No |
-| **ADMIN / TI** | Monitoreo | ❌ No (Solo Break-Glass) | ❌ No | ❌ No | ❌ No | ❌ No | Gestión gral | ✅ Audit Logs |
-
----
-
-## 3. Pila Tecnológica (Stack Recomendado)
-
-- **Backend**:
-  - Runtime: **Node.js (LTS)** con **TypeScript**.
-  - Framework: **Express.js** estructurado en capas limpias (Controladores, Servicios, Middleware, Repositorios).
-  - Seguridad: **Helmet** (Cabeceras OWASP), **CORS** estricto, **Bcrypt** para hashing salteado de contraseñas, **JWT** (Access Token 15 min + Refresh Token).
-  - Base de Datos: **PostgreSQL 16+** con extensiones `uuid-ossp` y `pgcrypto`.
-- **Frontend**:
-  - Framework: **Next.js 14+** (App Router) o **React + Vite** con TypeScript.
-  - UI & Estilos: **TailwindCSS** + **Shadcn UI** / **Lucide React**.
-  - Estado del Servidor: **TanStack React Query** (caché inteligente y revalidación segura).
+1. **Portal Público y Reserva de Citas**:
+   - Cabecera minimalista con acceso diferenciado para pacientes y personal facultativo.
+   - Directorio de médicos y agendamiento de citas presenciales o telemedicina.
+2. **Portal del Paciente (MiSalud)**:
+   - Acceso ágil y seguro mediante **Cédula de Identidad (CI)** (ej. `CI-4589214`).
+   - Consulta de citas médicas, recetas electrónicas oficiales y evolución clínica.
+   - **Aislamiento Ético HIPAA**: Las notas médicas confidenciales son purgadas por el servidor para proteger el criterio del facultativo.
+3. **Panel Clínico del Médico (EHR)**:
+   - Agenda diaria en tiempo real conectada a Supabase.
+   - Diagnósticos codificados en **CIE-10 / CIE-11** y emisión de recetas.
+   - Alerta visible de alergias críticas y notas privadas facultativas.
+4. **Módulo de Enfermería y Triaje Manchester**:
+   - Registro de constantes vitales (PA, FC, Temp, SpO2) y clasificación por severidad (Nivel 1 Rojo a Nivel 5 Azul).
+5. **Auditoría HIPAA y Administración TI**:
+   - Registro inmutable de eventos de acceso (`auditoria_accesos`) en Supabase.
 
 ---
 
-## 4. Ejecución del Backend
+## 🚀 Despliegue en la Nube
 
-Para poner en marcha el servidor de pruebas con las rutas protegidas y RBAC:
+### Variables de Entorno Requeridas en Vercel / Render:
+
+```env
+DATABASE_URL=postgresql://postgres:ClinicaHospital2026!@db.eoxolslmxbeufwimswhm.supabase.co:5432/postgres
+DB_SSL=true
+NODE_ENV=production
+JWT_SECRET=super_secret_healthtech_emr_jwt_key_2026_hipaa!
+JWT_REFRESH_SECRET=refresh_secret_key_rotation_token_998877!
+CORS_ORIGIN=*
+PORT=5000
+```
+
+### Comandos de Ejecución Local:
 
 ```bash
+# Iniciar backend
 cd backend
 npm install
-npm run dev
+npm run build
+npm run start
+
+# Frontend servido en http://localhost:5000
 ```
 
-Para correr la suite de verificación automatizada de roles y ética HIPAA:
-```bash
-npx tsx src/test-rbac-suite.ts
-```
+---
+
+## 👥 Credenciales de Prueba en Supabase:
+
+| Rol | Identificador / Cédula | Contraseña | Destino |
+| :--- | :--- | :--- | :--- |
+| **Paciente** | `CI-4589214` (Juan Pérez) | *(Solo CI)* | Portal MiSalud |
+| **Médico** | `dr.mendoza@hospital.com` | `ClinicaSegura2026!` | Panel Clínico EHR |
+| **Enfermería** | `enfermera.elena@hospital.com` | `ClinicaSegura2026!` | Triaje Manchester |
+| **Administrador** | `admin@hospital.com` | `ClinicaSegura2026!` | Auditoría HIPAA |
+
+---
+
+© 2026 Hospital de Santa Fe (Distrito Santa Fe) • Hospital Municipal Ichilo de San Carlos.
