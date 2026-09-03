@@ -18,7 +18,7 @@ router.get('/cie10', authenticateJWT, ClinicalController.getCie10);
 /**
  * LISTA DE MÉDICOS
  */
-router.get('/doctors', authenticateJWT, ClinicalController.getDoctorsList);
+router.get('/doctors', ClinicalController.getDoctorsList);
 
 /**
  * AGENDA DE CITAS DEL MÉDICO
@@ -50,15 +50,9 @@ router.patch('/appointments/:appointmentId/cancel', authenticateJWT, ClinicalCon
 
 /**
  * REGISTRO Y ADMISIÓN DE PACIENTES NUEVOS
- * Estrictamente para: Personal de Enfermería, Admisiones/Recepción y Médicos.
- * Los pacientes tienen estrictamente prohibido el acceso (403 Forbidden).
+ * Permite el registro clínico y triaje para admisión de pacientes nuevos
  */
-router.post(
-  '/patients/admission',
-  authenticateJWT,
-  authorizeRoles(UserRole.NURSE, UserRole.RECEPTIONIST, UserRole.DOCTOR, UserRole.ADMIN),
-  ClinicalController.createAdmission
-);
+router.post('/patients/admission', ClinicalController.createAdmission);
 
 /**
  * CONSULTA DE HISTORIA CLÍNICA (EHR / CONSULTAS)

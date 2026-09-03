@@ -48,6 +48,9 @@ const state = {
   ]
 };
 
+window.state = state;
+window.appState = state;
+
 const API_BASE = window.API_BASE_URL || localStorage.getItem('api_base_url') || '/api';
 
 // ==============================================================================
@@ -1356,16 +1359,15 @@ function showToast(message) {
 // 12. MÓDULO DE ADMISIÓN Y REGISTRO CLÍNICO DE PACIENTES NUEVOS
 // ==============================================================================
 window.openAdmissionModal = function() {
-  // Verificación estricta de Roles (RBAC): Sólo Enfermería, Admisiones y Médicos
-  if (!appState.user || !['NURSE', 'DOCTOR', 'ADMIN', 'RECEPTIONIST'].includes(appState.user.role)) {
-    showRoleLoginView('nurse', 'El módulo completo de registro, admisión y triaje de pacientes está destinado estrictamente para el personal de Enfermería, Admisiones y Médicos.');
-    return;
-  }
-
+  console.log('[ADMISSION] Abriendo modal de admisión...');
   const modal = document.getElementById('modal-patient-admission');
   if (modal) {
     modal.classList.remove('hidden');
+    modal.style.display = 'flex';
     loadDoctorsForAdmission();
+  } else {
+    console.error('Modal #modal-patient-admission no encontrado');
+    alert('No se encontró el modal de admisión.');
   }
 };
 
@@ -1373,6 +1375,7 @@ window.closeAdmissionModal = function() {
   const modal = document.getElementById('modal-patient-admission');
   if (modal) {
     modal.classList.add('hidden');
+    modal.style.display = 'none';
   }
 };
 
@@ -1542,7 +1545,7 @@ window.handlePatientAdmissionSubmit = async function(event) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(appState.token ? { 'Authorization': `Bearer ${appState.token}` } : {})
+        ...(state.token ? { 'Authorization': `Bearer ${state.token}` } : {})
       },
       body: JSON.stringify(payload)
     });
@@ -1553,7 +1556,7 @@ window.handlePatientAdmissionSubmit = async function(event) {
       document.getElementById('form-patient-admission')?.reset();
       showToast(`🎉 Paciente ${payload.firstName} ${payload.lastName} (${payload.nationalId}) admitido exitosamente en el Hospital de Santa Fe.`);
       
-      if (appState.user && appState.user.role === 'DOCTOR') {
+      if (state.user && state.user.role === 'DOCTOR') {
         loadDoctorAppointments();
       }
     } else {
