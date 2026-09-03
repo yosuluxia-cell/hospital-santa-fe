@@ -1359,15 +1359,17 @@ function showToast(message) {
 // 12. MÓDULO DE ADMISIÓN Y REGISTRO CLÍNICO DE PACIENTES NUEVOS
 // ==============================================================================
 window.openAdmissionModal = function() {
-  console.log('[ADMISSION] Abriendo modal de admisión...');
+  // Restricción estricta: Solo el personal de Enfermería puede registrar y admitir pacientes
+  if (!state.user || (state.user.role !== 'NURSE' && state.user.role !== 'ADMIN')) {
+    showRoleLoginView('nurse', 'Acceso restringido: El módulo de registro, admisión y triaje de pacientes está reservado estrictamente para el personal de Enfermería.');
+    return;
+  }
+
   const modal = document.getElementById('modal-patient-admission');
   if (modal) {
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
     loadDoctorsForAdmission();
-  } else {
-    console.error('Modal #modal-patient-admission no encontrado');
-    alert('No se encontró el modal de admisión.');
   }
 };
 

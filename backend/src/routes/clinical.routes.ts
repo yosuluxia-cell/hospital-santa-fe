@@ -50,9 +50,14 @@ router.patch('/appointments/:appointmentId/cancel', authenticateJWT, ClinicalCon
 
 /**
  * REGISTRO Y ADMISIÓN DE PACIENTES NUEVOS
- * Permite el registro clínico y triaje para admisión de pacientes nuevos
+ * Estrictamente exclusivo para el personal de Enfermería y Administración de Seguridad.
  */
-router.post('/patients/admission', ClinicalController.createAdmission);
+router.post(
+  '/patients/admission',
+  authenticateJWT,
+  authorizeRoles(UserRole.NURSE, UserRole.ADMIN),
+  ClinicalController.createAdmission
+);
 
 /**
  * CONSULTA DE HISTORIA CLÍNICA (EHR / CONSULTAS)
