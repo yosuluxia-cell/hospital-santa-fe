@@ -4,6 +4,7 @@
   "description": "Sistema de Gestión Hospitalaria & EMR - Hospital de Santa Fe (Distrito Santa Fe) - Municipio de San Carlos",
   "main": "backend/dist/server.js",
   "scripts": {
+    "dev": "cd backend && npm run dev",
     "build": "cd backend && npm install && npm run build",
     "start": "cd backend && npm run start",
     "db:init": "cd backend && npm run db:init"
