@@ -9,7 +9,7 @@
 <body>
 
   <!-- ========================================================================
-       1. MENÚ SUPERIOR MINIMALISTA (NAVBAR LIMPIA)
+       1. CABECERA PRINCIPAL MODERNA (NAVBAR UNIFICADA)
        ======================================================================== -->
   <header class="clean-main-nav">
     <a class="clean-brand" onclick="showLandingView()">
@@ -27,13 +27,15 @@
       <li><a onclick="scrollToSection('about-section')">Nosotros</a></li>
     </ul>
 
-    <!-- Únicamente dos botones claros a la derecha -->
+    <!-- UNIFICADO: Un solo botón de inicio de sesión general -->
     <div class="clean-nav-actions">
-      <button type="button" class="btn-clean-patient" onclick="navigateTo('patient')">
-        Portal Paciente
-      </button>
-      <button type="button" class="btn-clean-staff" onclick="showRoleLoginView('doctor')">
-        Acceso Personal
+      <button type="button" class="btn-unified-login" onclick="showRoleLoginView('patient')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        <span>Portal de Acceso</span>
       </button>
     </div>
   </header>
@@ -43,10 +45,13 @@
        ======================================================================== -->
   <div id="view-landing">
 
-    <!-- HERO SECTION LIMPIO Y BIENVENIDA -->
+    <!-- HERO SECTION MODERNO -->
     <section class="hero-clean-section">
       <div class="hero-clean-container">
-        <span class="hero-clean-tag">Atención Médica Municipal • Distrito Santa Fe</span>
+        <div class="hero-clean-tag">
+          <span>🏥</span>
+          <span>Atención Médica Municipal • Distrito Santa Fe</span>
+        </div>
         <h1 class="hero-clean-title">Hospital de Santa Fe (Distrito Santa Fe)</h1>
         <h2 class="hero-clean-subtitle">Hospital Municipal Ichilo de San Carlos</h2>
         <p class="hero-clean-desc">
@@ -55,24 +60,32 @@
 
         <!-- Dos botones de llamada a la acción principales -->
         <div class="hero-clean-buttons">
-          <button type="button" class="btn btn-primary" onclick="openScheduleModal()">
-            Reservar Cita
+          <button type="button" class="btn-hero-primary" onclick="openScheduleModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Reservar Cita Médica</span>
           </button>
-          <button type="button" class="btn btn-outline" onclick="navigateTo('patient')">
-            Consultar Expediente
+          <button type="button" class="btn-hero-secondary" onclick="showRoleLoginView('patient')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span>Portal de Acceso</span>
           </button>
         </div>
 
         <!-- Bloques limpios de servicios esenciales -->
         <div class="hero-clean-highlights">
           <div class="highlight-clean-card">
+            <div class="highlight-icon-box" style="background:#e0f2fe; color:#0369a1;">
+              🩺
+            </div>
             <h3 class="highlight-clean-title">Consultas Externas</h3>
             <p class="highlight-clean-text">
-              Atención médica especializada en Cardiología, Medicina General y Pediatría con seguimiento clínico continuo.
+              Atención médica programada en Cardiología, Medicina General y Pediatría con seguimiento clínico continuo.
             </p>
           </div>
 
           <div class="highlight-clean-card">
+            <div class="highlight-icon-box" style="background:#fee2e2; color:#b91c1c;">
+              🚨
+            </div>
             <h3 class="highlight-clean-title">Urgencias y Triaje 24/7</h3>
             <p class="highlight-clean-text">
               Protocolo Manchester de clasificación por severidad clínica y atención de emergencia permanente las 24 horas.
@@ -80,6 +93,9 @@
           </div>
 
           <div class="highlight-clean-card">
+            <div class="highlight-icon-box" style="background:#dcfce7; color:#15803d;">
+              📱
+            </div>
             <h3 class="highlight-clean-title">Expediente y Receta Digital</h3>
             <p class="highlight-clean-text">
               Consulta protegida de diagnósticos, evolución médica y recetas electrónicas ingresando tu Cédula de Identidad (CI).
@@ -98,39 +114,59 @@
 
       <div class="specialties-clean-grid">
         <div class="specialty-clean-card">
-          <div class="specialty-tag">Cardiología</div>
-          <h3 class="specialty-title">Salud Cardiovascular</h3>
-          <p class="specialty-desc">
-            Evaluación cardiovascular, detección temprana de hipertensión arterial, electrocardiogramas y seguimiento por el Dr. Alejandro Mendoza.
-          </p>
-          <a class="specialty-link" onclick="openScheduleDoctor('Cardiología')">Agendar Cita en Cardiología ➔</a>
+          <div>
+            <div class="specialty-tag">Cardiología</div>
+            <h3 class="specialty-title">Salud Cardiovascular</h3>
+            <p class="specialty-desc">
+              Evaluación cardiovascular integral, detección precoz de hipertensión arterial, electrocardiogramas y seguimiento especializado por el Dr. Alejandro Mendoza.
+            </p>
+          </div>
+          <a class="specialty-link" onclick="openScheduleDoctor('Cardiología')">
+            <span>Agendar en Cardiología</span>
+            <span>➔</span>
+          </a>
         </div>
 
         <div class="specialty-clean-card">
-          <div class="specialty-tag">Medicina General</div>
-          <h3 class="specialty-title">Atención Primaria</h3>
-          <p class="specialty-desc">
-            Diagnóstico clínico integral, control preventivo en salud, manejo de patologías crónicas y derivación oportuna.
-          </p>
-          <a class="specialty-link" onclick="openScheduleDoctor('Medicina General')">Agendar Medicina General ➔</a>
+          <div>
+            <div class="specialty-tag">Medicina General</div>
+            <h3 class="specialty-title">Atención Primaria</h3>
+            <p class="specialty-desc">
+              Diagnóstico clínico integral, control preventivo en salud, manejo de patologías crónicas y derivación oportuna a especialidades.
+            </p>
+          </div>
+          <a class="specialty-link" onclick="openScheduleDoctor('Medicina General')">
+            <span>Agendar Medicina General</span>
+            <span>➔</span>
+          </a>
         </div>
 
         <div class="specialty-clean-card">
-          <div class="specialty-tag">Pediatría</div>
-          <h3 class="specialty-title">Materno e Infantil</h3>
-          <p class="specialty-desc">
-            Cuidado integral de lactantes, niños y adolescentes, control del niño sano y programas de vacunación municipal.
-          </p>
-          <a class="specialty-link" onclick="openScheduleDoctor('Pediatría')">Agendar Pediatría ➔</a>
+          <div>
+            <div class="specialty-tag">Pediatría</div>
+            <h3 class="specialty-title">Materno e Infantil</h3>
+            <p class="specialty-desc">
+              Cuidado integral de lactantes, niños y adolescentes, control del niño sano y programas oficiales de vacunación municipal.
+            </p>
+          </div>
+          <a class="specialty-link" onclick="openScheduleDoctor('Pediatría')">
+            <span>Agendar Pediatría</span>
+            <span>➔</span>
+          </a>
         </div>
 
         <div class="specialty-clean-card">
-          <div class="specialty-tag">Urgencias</div>
-          <h3 class="specialty-title">Atención Continua 24 Horas</h3>
-          <p class="specialty-desc">
-            Recepción, triaje Manchester y estabilización inmediata de pacientes en estado crítico o con requerimiento urgente.
-          </p>
-          <a class="specialty-link" onclick="scrollToSection('about-section')">Información de Emergencias ➔</a>
+          <div>
+            <div class="specialty-tag">Urgencias</div>
+            <h3 class="specialty-title">Atención Continua 24 Horas</h3>
+            <p class="specialty-desc">
+              Recepción, triaje Manchester y estabilización inmediata de pacientes en estado crítico o con requerimiento médico de urgencia.
+            </p>
+          </div>
+          <a class="specialty-link" onclick="scrollToSection('about-section')">
+            <span>Información de Urgencias</span>
+            <span>➔</span>
+          </a>
         </div>
       </div>
     </section>
@@ -139,7 +175,7 @@
     <section class="clean-section-wrapper" id="search-section">
       <div class="clean-search-card">
         <div class="clean-section-header" style="margin-bottom: 1.5rem;">
-          <h2 class="clean-section-title" style="font-size:1.5rem;">Directorio de Especialistas</h2>
+          <h2 class="clean-section-title" style="font-size:1.55rem;">Directorio de Especialistas</h2>
           <p class="clean-section-desc">Consulta los profesionales facultativos activos en el Hospital de Santa Fe.</p>
         </div>
 
@@ -170,14 +206,14 @@
             </div>
 
             <div>
-              <button type="submit" class="btn btn-primary" style="width: 100%; padding:0.65rem 1.5rem;">
+              <button type="submit" class="btn btn-primary" style="width: 100%; padding:0.7rem 1.5rem;">
                 Buscar
               </button>
             </div>
           </div>
         </form>
 
-        <div id="doctor-search-results" style="margin-top: 1.5rem;">
+        <div id="doctor-search-results" style="margin-top: 1.75rem;">
           <div class="specialties-clean-grid" id="doctor-cards-list">
             <!-- Médicos cargados desde PostgreSQL Supabase -->
           </div>
@@ -200,29 +236,29 @@
             <button type="button" class="btn btn-primary btn-sm" onclick="openScheduleModal()">
               Reservar Cita en Línea
             </button>
-            <button type="button" class="btn btn-secondary btn-sm" onclick="navigateTo('patient')">
-              Acceder con Cédula (CI)
+            <button type="button" class="btn btn-secondary btn-sm" onclick="showRoleLoginView('patient')">
+              Portal de Acceso
             </button>
           </div>
         </div>
 
         <div class="about-clean-card">
           <h2 class="about-clean-title">Ubicación y Atención 24/7</h2>
-          <div style="font-size:0.9rem; line-height:1.8; color:#475569; margin-bottom:1.5rem;">
+          <div style="font-size:0.925rem; line-height:1.8; color:#475569; margin-bottom:1.5rem;">
             <div><strong>Ubicación:</strong> Distrito Santa Fe, Municipio de San Carlos (Provincia Ichilo)</div>
             <div><strong>Central Telefónica:</strong> +591 (3) 345-8000</div>
             <div><strong>Línea de Urgencias:</strong> 168 / 911</div>
             <div><strong>Atención de Urgencias:</strong> Abierto las 24 horas, todos los días</div>
             <div><strong>Consultas Externas:</strong> Lunes a Viernes de 08:00 a 18:00 hrs</div>
           </div>
-          <div class="badge badge-success" style="padding:0.4rem 0.8rem; font-size:0.8rem;">
-            Servicio de Urgencias y Box de Choque Activo
+          <div class="badge badge-success" style="padding:0.45rem 0.9rem; font-size:0.8rem;">
+            ● Servicio de Urgencias y Box de Choque Activo
           </div>
         </div>
       </div>
     </section>
 
-    <!-- PIE DE PÁGINA LIMPIO -->
+    <!-- PIE DE PÁGINA ELEGANTE -->
     <footer class="clean-footer">
       <div class="clean-footer-container">
         <div class="clean-footer-grid">
@@ -234,7 +270,7 @@
               Hospital Municipal Ichilo de San Carlos - Municipio de San Carlos.
             </div>
             <div style="font-size:0.8rem; color:#64748b;">
-              Base de Datos: PostgreSQL Supabase (Conexión Segura Cifrada)
+              Base de Datos: PostgreSQL Supabase (Conexión Cifrada SSL)
             </div>
           </div>
 
@@ -251,10 +287,10 @@
           <div>
             <div class="clean-footer-title">Accesos al Sistema</div>
             <ul class="clean-footer-links">
-              <li><a onclick="navigateTo('patient')">Portal Paciente (MiSalud)</a></li>
-              <li><a onclick="navigateTo('doctor')">Panel Clínico del Médico</a></li>
-              <li><a onclick="navigateTo('nurse')">Enfermería y Triaje</a></li>
-              <li><a onclick="navigateTo('admin')">Administración TI</a></li>
+              <li><a onclick="showRoleLoginView('patient')">Portal Paciente (MiSalud)</a></li>
+              <li><a onclick="showRoleLoginView('doctor')">Panel Clínico del Médico</a></li>
+              <li><a onclick="showRoleLoginView('nurse')">Enfermería y Triaje</a></li>
+              <li><a onclick="showRoleLoginView('admin')">Administración TI</a></li>
             </ul>
           </div>
         </div>
@@ -268,211 +304,193 @@
   </div>
 
   <!-- ========================================================================
-       VISTA B: PÁGINA DE LOGIN POR ROLES (CONTROL RBAC ESTRICTO)
+       VISTA B: PORTAL DE ACCESO ÚNICO (UNIFIED AUTH PORTAL)
        ======================================================================== -->
-  <div id="view-role-login" class="portal-login-wrapper hidden">
-    <div style="margin-bottom: 1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
-      <button type="button" class="btn btn-secondary btn-sm" onclick="showLandingView()">
-        ⬅ Volver al Inicio
+  <div id="view-role-login" class="unified-auth-viewport hidden">
+    <div class="unified-auth-topbar">
+      <button type="button" class="btn-auth-back" onclick="showLandingView()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Volver al Inicio</span>
       </button>
-      <span class="badge badge-primary">Control de Acceso RBAC</span>
+      <div class="auth-security-badge">
+        <span class="security-dot"></span>
+        <span>Conexión Cifrada SSL • Supabase</span>
+      </div>
     </div>
 
-    <div class="portal-header">
-      <h1 class="portal-title">Acceso al Sistema Hospitalario</h1>
-      <p class="portal-subtitle">
-        Selecciona tu módulo de acceso según tu función en el Hospital de Santa Fe.
-      </p>
-    </div>
-
-    <!-- Alerta de Redirección / Acceso Denegado -->
-    <div id="login-redirect-alert" class="hidden" style="max-width:650px; margin:0 auto 1.5rem auto; background:#fef2f2; border:1px solid #fecaca; border-left:4px solid #dc2626; color:#991b1b; padding:0.85rem 1.25rem; border-radius:0.5rem; font-size:0.875rem;">
-    </div>
-
-    <!-- Las 4 Tarjetas de Selección de Rol -->
-    <div class="role-cards-grid">
-      
-      <!-- 1. PACIENTE (Acceso con CI) -->
-      <div id="card-tab-patient" class="role-card-select patient-role-card selected" onclick="selectLoginRoleTab('patient')">
-        <div>
-          <div class="role-icon-box" style="background:#d1fae5; color:#065f46;">
-            👤
-          </div>
-          <h3 class="role-card-title">Portal Paciente</h3>
-          <span class="badge badge-success" style="margin-bottom:0.75rem;">Acceso con Cédula (CI)</span>
-          <p class="role-card-desc">
-            Consulta tus citas programadas, recetas médicas vigentes y evolución clínica con tu CI.
-          </p>
+    <div class="unified-auth-card">
+      <div class="auth-card-brand">
+        <div class="auth-brand-symbol">⚕</div>
+        <div class="auth-brand-text">
+          <h2 class="auth-hospital-title">HOSPITAL DE SANTA FE</h2>
+          <p class="auth-hospital-sub">Distrito Santa Fe • San Carlos</p>
         </div>
-        <button type="button" class="btn btn-green role-enter-btn" onclick="event.stopPropagation(); selectLoginRoleTab('patient');">
-          Ingresar con Cédula ➔
+      </div>
+
+      <div class="auth-card-header">
+        <h1 class="auth-title">Portal de Acceso Único</h1>
+        <p class="auth-subtitle">Ingresa al sistema seleccionando tu perfil hospitalario</p>
+      </div>
+
+      <!-- Selector Segmentado de Roles -->
+      <div class="auth-segmented-control" role="tablist">
+        <button type="button" id="card-tab-patient" class="auth-segment-btn selected" onclick="selectLoginRoleTab('patient')">
+          <span class="segment-icon">👤</span>
+          <span class="segment-label">Paciente</span>
+        </button>
+        <button type="button" id="card-tab-doctor" class="auth-segment-btn" onclick="selectLoginRoleTab('doctor')">
+          <span class="segment-icon">👨‍⚕️</span>
+          <span class="segment-label">Médico</span>
+        </button>
+        <button type="button" id="card-tab-nurse" class="auth-segment-btn" onclick="selectLoginRoleTab('nurse')">
+          <span class="segment-icon">🩺</span>
+          <span class="segment-label">Enfermería</span>
+        </button>
+        <button type="button" id="card-tab-admin" class="auth-segment-btn" onclick="selectLoginRoleTab('admin')">
+          <span class="segment-icon">🛡️</span>
+          <span class="segment-label">Admin TI</span>
         </button>
       </div>
 
-      <!-- 2. MÉDICO FACULTATIVO -->
-      <div id="card-tab-doctor" class="role-card-select doctor-role-card" onclick="selectLoginRoleTab('doctor')">
-        <div>
-          <div class="role-icon-box" style="background:#e0f2fe; color:#004b93;">
-            👨‍⚕️
+      <!-- Alerta de Redirección / Restricción de Acceso -->
+      <div id="login-redirect-alert" class="hidden auth-banner-alert"></div>
+
+      <!-- FORMS CONTAINER -->
+      <div class="auth-forms-wrapper">
+        
+        <!-- 1. FORMULARIO PACIENTE (CON CÉDULA CI) -->
+        <div id="login-form-patient-box" class="auth-form-panel">
+          <div class="auth-role-summary patient-theme">
+            <span class="auth-pill">Acceso con Cédula (CI)</span>
+            <p>Consulta tus recetas electrónicas, citas agendadas y evolución clínica sin necesidad de recordar contraseñas.</p>
           </div>
-          <h3 class="role-card-title">Personal Médico</h3>
-          <span class="badge badge-primary" style="margin-bottom:0.75rem;">EHR & Consulta</span>
-          <p class="role-card-desc">
-            Agenda médica, expediente del paciente, alergias críticas, CIE-10 y notas confidenciales.
-          </p>
-        </div>
-        <button type="button" class="btn btn-primary role-enter-btn" onclick="event.stopPropagation(); selectLoginRoleTab('doctor');">
-          Ingresar como Médico ➔
-        </button>
-      </div>
 
-      <!-- 3. ENFERMERÍA Y TRIAJE -->
-      <div id="card-tab-nurse" class="role-card-select nurse-role-card" onclick="selectLoginRoleTab('nurse')">
-        <div>
-          <div class="role-icon-box" style="background:#ecfeff; color:#0e7490;">
-            🩺
-          </div>
-          <h3 class="role-card-title">Enfermería & Triaje</h3>
-          <span class="badge badge-info" style="margin-bottom:0.75rem;">Triaje Manchester</span>
-          <p class="role-card-desc">
-            Registro de signos vitales (PA, FC, Temp, SpO2) y clasificación por severidad clínica.
-          </p>
-        </div>
-        <button type="button" class="btn btn-secondary role-enter-btn" style="border-color:#0891b2; color:#0891b2;" onclick="event.stopPropagation(); selectLoginRoleTab('nurse');">
-          Ingresar a Triaje ➔
-        </button>
-      </div>
+          <div id="patient-login-alert" class="hidden auth-error-alert"></div>
 
-      <!-- 4. ADMINISTRATIVO / SEGURIDAD TI -->
-      <div id="card-tab-admin" class="role-card-select admin-role-card" onclick="selectLoginRoleTab('admin')">
-        <div>
-          <div class="role-icon-box" style="background:#f3e8ff; color:#6b21a8;">
-            🛡️
-          </div>
-          <h3 class="role-card-title">Administración TI</h3>
-          <span class="badge badge-purple" style="margin-bottom:0.75rem;">Auditoría HIPAA</span>
-          <p class="role-card-desc">
-            Gestión institucional y visor inmutable de eventos de acceso según norma HIPAA.
-          </p>
-        </div>
-        <button type="button" class="btn btn-purple role-enter-btn" onclick="event.stopPropagation(); selectLoginRoleTab('admin');">
-          Ingresar como Admin ➔
-        </button>
-      </div>
-
-    </div>
-
-    <!-- CONTENEDOR CENTRAL DE FORMULARIOS POR ROL -->
-    <div class="custom-login-accordion">
-      
-      <!-- FORMULARIO 1: PACIENTES (ACCESO CON CÉDULA DE IDENTIDAD - CI) -->
-      <div id="login-form-patient-box">
-        <div style="margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border);">
-          <h3 style="font-size:1.1rem; font-weight:800; color:#065f46; margin:0 0 0.25rem 0;">Acceso al Portal Paciente</h3>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Ingresa tu Cédula de Identidad (CI) o Código de Paciente</p>
-        </div>
-
-        <div id="patient-login-alert" class="hidden" style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:0.6rem; border-radius:0.5rem; font-size:0.8rem; margin-bottom:0.75rem;"></div>
-
-        <form id="patient-ci-form" onsubmit="handlePatientCiLogin(event)">
-          <div class="form-group">
-            <label class="form-label" for="patient-ci-input">Cédula de Identidad (CI)</label>
-            <input type="text" id="patient-ci-input" class="form-input" placeholder="ej. CI-4589214 o 4589214" required autocomplete="off">
-            <div style="font-size:0.75rem; color:#64748b; margin-top:0.35rem;">
-              Acceso directo para ciudadanos del Municipio de San Carlos y Distrito Santa Fe.
+          <form id="patient-ci-form" onsubmit="handlePatientCiLogin(event)">
+            <div class="form-group">
+              <label class="form-label" for="patient-ci-input">Cédula de Identidad (CI)</label>
+              <div class="input-with-icon">
+                <span class="input-icon">🪪</span>
+                <input type="text" id="patient-ci-input" class="form-input" placeholder="ej. CI-4589214 o 4589214" required autocomplete="off">
+              </div>
             </div>
-          </div>
 
-          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:0.5rem; padding:0.75rem; margin-bottom:1rem; font-size:0.75rem; color:#166534;">
-            <strong>Pacientes de prueba en Supabase:</strong><br>
-            • <a style="text-decoration:underline; cursor:pointer;" onclick="fillPatientCi('CI-4589214')">Juan Pérez (CI-4589214)</a><br>
-            • <a style="text-decoration:underline; cursor:pointer;" onclick="fillPatientCi('CI-7812903')">María Gómez (CI-7812903)</a>
-          </div>
+            <div class="demo-chips-container">
+              <span class="demo-chips-title">Cédulas de prueba en Supabase:</span>
+              <div class="demo-chips-list">
+                <button type="button" class="demo-chip" onclick="fillPatientCi('CI-4589214')">Juan Pérez (CI-4589214)</button>
+                <button type="button" class="demo-chip" onclick="fillPatientCi('CI-7812903')">María Gómez (CI-7812903)</button>
+              </div>
+            </div>
 
-          <button type="submit" id="btn-patient-submit" class="btn btn-green" style="width:100%; padding:0.8rem; font-size:0.95rem;">
-            Acceder a MiSalud ➔
-          </button>
-        </form>
-      </div>
-
-      <!-- FORMULARIO 2: MÉDICO FACULTATIVO -->
-      <div id="login-form-doctor-box" class="hidden">
-        <div style="margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border);">
-          <h3 style="font-size:1.1rem; font-weight:800; color:#004b93; margin:0 0 0.25rem 0;">Acceso Personal Médico</h3>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Panel Clínico, Expediente EHR y Notas Privadas</p>
+            <button type="submit" id="btn-patient-submit" class="btn-auth-submit btn-patient-accent">
+              <span>Acceder a MiSalud</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
         </div>
 
-        <div id="doctor-login-alert" class="hidden" style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:0.6rem; border-radius:0.5rem; font-size:0.8rem; margin-bottom:0.75rem;"></div>
-
-        <form id="doctor-auth-form" onsubmit="handleStaffAuth(event, 'DOCTOR')">
-          <div class="form-group">
-            <label class="form-label" for="doctor-ident-input">Correo Institucional o Matrícula</label>
-            <input type="text" id="doctor-ident-input" class="form-input" placeholder="dr.mendoza@hospital.com" required value="dr.mendoza@hospital.com">
+        <!-- 2. FORMULARIO MÉDICO -->
+        <div id="login-form-doctor-box" class="auth-form-panel hidden">
+          <div class="auth-role-summary doctor-theme">
+            <span class="auth-pill">Personal Facultativo</span>
+            <p>Acceso al expediente clínico electrónico (EHR), agenda de pacientes, catálogo CIE-10 y notas privadas.</p>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="doctor-pass-input">Contraseña</label>
-            <input type="password" id="doctor-pass-input" class="form-input" placeholder="••••••••" required value="ClinicaSegura2026!">
-          </div>
+          <div id="doctor-login-alert" class="hidden auth-error-alert"></div>
 
-          <button type="submit" id="btn-doctor-submit" class="btn btn-primary" style="width:100%; padding:0.8rem; font-size:0.95rem;">
-            Ingresar al Panel Clínico ➔
-          </button>
-        </form>
-      </div>
+          <form id="doctor-auth-form" onsubmit="handleStaffAuth(event, 'DOCTOR')">
+            <div class="form-group">
+              <label class="form-label" for="doctor-ident-input">Correo Institucional o Matrícula</label>
+              <div class="input-with-icon">
+                <span class="input-icon">✉</span>
+                <input type="text" id="doctor-ident-input" class="form-input" placeholder="dr.mendoza@hospital.com" required value="dr.mendoza@hospital.com">
+              </div>
+            </div>
 
-      <!-- FORMULARIO 3: ENFERMERÍA Y TRIAJE -->
-      <div id="login-form-nurse-box" class="hidden">
-        <div style="margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border);">
-          <h3 style="font-size:1.1rem; font-weight:800; color:#0e7490; margin:0 0 0.25rem 0;">Acceso Enfermería y Cuidados</h3>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Módulo de Triaje Manchester y Constantes Vitales</p>
+            <div class="form-group">
+              <label class="form-label" for="doctor-pass-input">Contraseña</label>
+              <div class="input-with-icon">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="doctor-pass-input" class="form-input" placeholder="••••••••" required value="ClinicaSegura2026!">
+              </div>
+            </div>
+
+            <button type="submit" id="btn-doctor-submit" class="btn-auth-submit btn-doctor-accent">
+              <span>Ingresar al Panel Clínico</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
         </div>
 
-        <div id="nurse-login-alert" class="hidden" style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:0.6rem; border-radius:0.5rem; font-size:0.8rem; margin-bottom:0.75rem;"></div>
-
-        <form id="nurse-auth-form" onsubmit="handleStaffAuth(event, 'NURSE')">
-          <div class="form-group">
-            <label class="form-label" for="nurse-ident-input">Correo de Enfermería</label>
-            <input type="text" id="nurse-ident-input" class="form-input" placeholder="enfermera.elena@hospital.com" required value="enfermera.elena@hospital.com">
+        <!-- 3. FORMULARIO ENFERMERÍA -->
+        <div id="login-form-nurse-box" class="auth-form-panel hidden">
+          <div class="auth-role-summary nurse-theme">
+            <span class="auth-pill">Enfermería & Cuidados</span>
+            <p>Módulo de Triaje Manchester, registro de constantes vitales (PA, FC, Temp, SpO2) y asignación de box.</p>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="nurse-pass-input">Contraseña</label>
-            <input type="password" id="nurse-pass-input" class="form-input" placeholder="••••••••" required value="ClinicaSegura2026!">
-          </div>
+          <div id="nurse-login-alert" class="hidden auth-error-alert"></div>
 
-          <button type="submit" id="btn-nurse-submit" class="btn btn-secondary" style="width:100%; padding:0.8rem; font-size:0.95rem; border-color:#0891b2; color:#0891b2;">
-            Ingresar a Triaje & Enfermería ➔
-          </button>
-        </form>
-      </div>
+          <form id="nurse-auth-form" onsubmit="handleStaffAuth(event, 'NURSE')">
+            <div class="form-group">
+              <label class="form-label" for="nurse-ident-input">Correo de Enfermería</label>
+              <div class="input-with-icon">
+                <span class="input-icon">✉</span>
+                <input type="text" id="nurse-ident-input" class="form-input" placeholder="enfermera.elena@hospital.com" required value="enfermera.elena@hospital.com">
+              </div>
+            </div>
 
-      <!-- FORMULARIO 4: ADMINISTRADOR / TI -->
-      <div id="login-form-admin-box" class="hidden">
-        <div style="margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border);">
-          <h3 style="font-size:1.1rem; font-weight:800; color:#6b21a8; margin:0 0 0.25rem 0;">Seguridad TI & Cumplimiento</h3>
-          <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">Visor Inmutable de Auditoría HIPAA</p>
+            <div class="form-group">
+              <label class="form-label" for="nurse-pass-input">Contraseña</label>
+              <div class="input-with-icon">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="nurse-pass-input" class="form-input" placeholder="••••••••" required value="ClinicaSegura2026!">
+              </div>
+            </div>
+
+            <button type="submit" id="btn-nurse-submit" class="btn-auth-submit btn-nurse-accent">
+              <span>Ingresar a Triaje & Enfermería</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
         </div>
 
-        <div id="admin-login-alert" class="hidden" style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:0.6rem; border-radius:0.5rem; font-size:0.8rem; margin-bottom:0.75rem;"></div>
-
-        <form id="admin-auth-form" onsubmit="handleStaffAuth(event, 'ADMIN')">
-          <div class="form-group">
-            <label class="form-label" for="admin-ident-input">Correo Administrativo</label>
-            <input type="text" id="admin-ident-input" class="form-input" placeholder="admin@hospital.com" required value="admin@hospital.com">
+        <!-- 4. FORMULARIO ADMINISTRACIÓN -->
+        <div id="login-form-admin-box" class="auth-form-panel hidden">
+          <div class="auth-role-summary admin-theme">
+            <span class="auth-pill">Seguridad TI & Cumplimiento</span>
+            <p>Visor inmutable de auditoría HIPAA y registro de trazabilidad de accesos (auditoria_accesos).</p>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="admin-pass-input">Contraseña</label>
-            <input type="password" id="admin-pass-input" class="form-input" placeholder="••••••••" required value="ClinicaSegura2026!">
-          </div>
+          <div id="admin-login-alert" class="hidden auth-error-alert"></div>
 
-          <button type="submit" id="btn-admin-submit" class="btn btn-purple" style="width:100%; padding:0.8rem; font-size:0.95rem;">
-            Ingresar a Administración TI ➔
-          </button>
-        </form>
+          <form id="admin-auth-form" onsubmit="handleStaffAuth(event, 'ADMIN')">
+            <div class="form-group">
+              <label class="form-label" for="admin-ident-input">Correo de Administrador</label>
+              <div class="input-with-icon">
+                <span class="input-icon">✉</span>
+                <input type="text" id="admin-ident-input" class="form-input" placeholder="admin@hospital.com" required value="admin@hospital.com">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="admin-pass-input">Contraseña</label>
+              <div class="input-with-icon">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="admin-pass-input" class="form-input" placeholder="••••••••" required value="ClinicaSegura2026!">
+              </div>
+            </div>
+
+            <button type="submit" id="btn-admin-submit" class="btn-auth-submit btn-admin-accent">
+              <span>Ingresar a Administración TI</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
+        </div>
+
       </div>
-
     </div>
   </div>
 
@@ -599,7 +617,7 @@
                 <label class="form-label">4. Diagnósticos Codificados (CIE-10 / CIE-11)</label>
                 <div style="position: relative;">
                   <input type="text" id="cie10-search" class="form-input" placeholder="Escribe código o descripción (ej. I20, Angina, Hipertensión)..." autocomplete="off">
-                  <div id="cie10-dropdown" class="hidden" style="position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:0.5rem; box-shadow:var(--shadow-md); z-index:30; max-height:200px; overflow-y:auto;"></div>
+                  <div id="cie10-dropdown" class="hidden" style="position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--border); border-radius:0.5rem; box-shadow:var(--shadow-card); z-index:30; max-height:200px; overflow-y:auto;"></div>
                 </div>
                 <div id="cie10-tags-container" class="cie-tag-list"></div>
               </div>
@@ -643,7 +661,7 @@
               </div>
 
               <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
-                <button type="submit" id="btn-save-consultation" class="btn btn-primary" style="padding: 0.75rem 1.75rem; font-size: 0.95rem;">
+                <button type="submit" id="btn-save-consultation" class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 0.95rem;">
                   Guardar y Finalizar Consulta Médica
                 </button>
               </div>
@@ -682,9 +700,9 @@
     </header>
 
     <main class="dashboard-container">
-      <div style="background:#fff; border:1px solid var(--border); border-radius:0.75rem; padding:1.5rem; margin-bottom:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <div style="background:#fff; border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.75rem; margin-bottom:1.75rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; box-shadow:var(--shadow-card);">
         <div>
-          <h2 style="font-size:1.3rem; font-weight:800; color:var(--secondary);">Bienvenido(a), <span id="welcome-patient-name">Juan</span></h2>
+          <h2 style="font-size:1.35rem; font-weight:800; color:var(--secondary);">Bienvenido(a), <span id="welcome-patient-name">Juan</span></h2>
           <p style="color:var(--text-muted); font-size:0.875rem;">Accede a tus citas, recetas médicas y consulta tu historial clínico de forma segura con tu Cédula de Identidad.</p>
         </div>
         <button type="button" class="btn btn-primary" onclick="openScheduleModal()">
@@ -714,7 +732,7 @@
       </div>
 
       <div id="patient-tab-historial" class="tab-content hidden">
-        <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:0.5rem; padding:1rem; margin-bottom:1rem; font-size:0.85rem; color:#065f46;">
+        <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:var(--radius-md); padding:1.15rem; margin-bottom:1.25rem; font-size:0.875rem; color:#065f46;">
           <strong>Protección Ética y Confidencialidad Médica (Cumplimiento HIPAA):</strong> Tienes acceso a tus síntomas registrados, evolución clínica y diagnósticos CIE-10. Las notas internas del facultativo están reservadas y protegidas por el servidor.
         </div>
 
@@ -999,7 +1017,7 @@
   <div id="modal-schedule" class="modal-backdrop hidden">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 style="font-weight:700; color:var(--secondary); font-size:1.1rem;">Agendar Cita Médica</h3>
+        <h3 style="font-weight:800; color:var(--secondary); font-size:1.15rem;">Agendar Cita Médica</h3>
         <button type="button" class="btn btn-secondary btn-sm" onclick="closeScheduleModal()">✕</button>
       </div>
       <form id="form-schedule-appointment">
@@ -1038,7 +1056,7 @@
   </div>
 
   <!-- Toast Notification Flotante -->
-  <div id="toast-notification" class="hidden" style="position:fixed; bottom:20px; right:20px; background:#004b93; color:#fff; padding:0.85rem 1.25rem; border-radius:0.5rem; box-shadow:var(--shadow-lg); z-index:100; font-weight:600; font-size:0.875rem;"></div>
+  <div id="toast-notification" class="hidden" style="position:fixed; bottom:24px; right:24px; background:#0f172a; color:#fff; padding:0.9rem 1.4rem; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.25); z-index:100; font-weight:700; font-size:0.875rem; border:1px solid #334155;"></div>
 
   <script src="app.js"></script>
 </body>
