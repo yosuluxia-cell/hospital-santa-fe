@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { ClinicalController } from '../controllers/clinical.controller';
-import { authenticateJWT } from '../middleware/auth.middleware';
+import { authenticateJWT, optionalAuthJWT } from '../middleware/auth.middleware';
 import {
   authorizeRoles,
   patientDataOwnershipGuard,
@@ -43,10 +43,21 @@ router.get(
 );
 
 /**
- * AGENDAR Y CANCELAR CITAS
+ * AGENDAR Y CANCELAR CITAS (Público y Autenticado)
  */
-router.post('/appointments', authenticateJWT, ClinicalController.scheduleAppointment);
+router.post('/appointments', optionalAuthJWT, ClinicalController.scheduleAppointment);
 router.patch('/appointments/:appointmentId/cancel', authenticateJWT, ClinicalController.cancelAppointment);
+
+/**
+ * TRIAJE MANCHESTER Y CONSTANTES VITALES
+ * Exclusivo para personal de Enfermería, Facultativos y Administradores
+ */
+router.patch(
+  '/appointments/:appointmentId/triage',
+  authenticateJWT,
+  authorizeRoles(UserRole.NURSE, UserRole.DOCTOR, UserRole.ADMIN),
+  ClinicalController.updateTriage
+);
 
 /**
  * REGISTRO Y ADMISIÓN DE PACIENTES NUEVOS

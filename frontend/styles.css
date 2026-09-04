@@ -1465,3 +1465,39 @@ body {
   .hero-clean-buttons .btn { width: 100%; }
   .unified-auth-card { padding: 1.75rem 1.25rem; }
 }
+
+/* ==========================================================================
+   ESTILOS DE IMPRESIÓN OFICIAL HOSPITALARIA (RECETAS Y COMPROBANTES)
+   ========================================================================== */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #modal-prescription-print:not(.hidden),
+  #modal-prescription-print:not(.hidden) *,
+  #modal-appointment-ticket:not(.hidden),
+  #modal-appointment-ticket:not(.hidden) * {
+    visibility: visible;
+  }
+  #modal-prescription-print:not(.hidden),
+  #modal-appointment-ticket:not(.hidden) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+    backdrop-filter: none !important;
+  }
+  .modal-content {
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .modal-footer, .btn, button {
+    display: none !important;
+  }
+}
+

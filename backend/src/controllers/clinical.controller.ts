@@ -390,21 +390,57 @@ export class ClinicalController {
   }
 
   /**
-   * Programar / Solicitar Nueva Cita Médica
+   * Programar / Solicitar Nueva Cita Médica (Público o Autenticado)
    */
   public static async scheduleAppointment(req: Request, res: Response): Promise<void> {
-    const actor = req.user!;
-    const { patientId, doctorId, appointmentDate, modality, reason } = req.body;
+    const actor = req.user;
+    let { patientId, doctorId, appointmentDate, modality, reason, fullName, nationalId, phone } = req.body;
 
-    if (!patientId || !appointmentDate) {
-      res.status(400).json({ success: false, message: 'Paciente y fecha de cita son obligatorios.' });
+    if (!appointmentDate) {
+      res.status(400).json({ success: false, message: 'La fecha y hora de la cita son obligatorias.' });
       return;
     }
 
     try {
+      // Si no viene patientId pero sí nationalId (Agendamiento público desde la web)
+      if (!patientId && nationalId) {
+        const cleanDoc = nationalId.trim();
+        const patSearch = await pool.query(
+          `SELECT id, nombre, apellido FROM pacientes 
+           WHERE LOWER(documento_identidad) = LOWER($1) 
+              OR REPLACE(LOWER(documento_identidad), 'ci-', '') = LOWER(REPLACE($1, 'ci-', ''))
+           LIMIT 1`,
+          [cleanDoc]
+        );
+
+        if (patSearch.rows.length > 0) {
+          patientId = patSearch.rows[0].id;
+        } else {
+          // Crear ficha básica de paciente para agendar su cita
+          const names = (fullName || 'Paciente').trim().split(' ');
+          const firstName = names[0] || 'Paciente';
+          const lastName = names.slice(1).join(' ') || 'General';
+
+          const newPatRes = await pool.query(
+            `INSERT INTO pacientes (
+              documento_identidad, nombre, apellido, fecha_nacimiento, genero, sexo_biologico, telefono, seguro_medico
+            ) VALUES (
+              $1, $2, $3, '1990-01-01', 'No especificado', 'Masculino', $4, 'SUS / Seguro Universal'
+            ) RETURNING id`,
+            [cleanDoc, firstName, lastName, phone || '']
+          );
+          patientId = newPatRes.rows[0].id;
+        }
+      }
+
+      if (!patientId) {
+        res.status(400).json({ success: false, message: 'Debe ingresar su Cédula de Identidad (CI) o iniciar sesión.' });
+        return;
+      }
+
       let targetDoctorId = doctorId;
       if (!targetDoctorId) {
-        const medRes = await pool.query('SELECT id FROM medicos LIMIT 1');
+        const medRes = await pool.query('SELECT id FROM medicos WHERE activo = TRUE LIMIT 1');
         targetDoctorId = medRes.rows[0]?.id;
       }
 
@@ -423,16 +459,28 @@ export class ClinicalController {
         modality || 'PRESENCIAL',
         reason || 'Consulta médica general',
         meetingUrl,
-        actor.userId
+        actor?.userId || null
       ]);
 
+      const appointment = insertRes.rows[0];
+
+      // Consultar nombre del médico y especialidad para la confirmación
+      const docInfo = await pool.query(
+        `SELECT u.nombre || ' ' || u.apellido AS medico_nombre, m.especialidad
+         FROM medicos m
+         JOIN usuarios u ON m.id_usuario = u.id
+         WHERE m.id = $1`,
+        [targetDoctorId]
+      );
+
+      // Auditoría inmutable
       await auditService.log({
-        actorId: actor.userId,
-        actorEmail: actor.email,
-        actorRole: actor.role,
+        actorId: actor?.userId || patientId,
+        actorEmail: actor?.email || 'portal-publico@hospital-santafe.gob.bo',
+        actorRole: actor?.role || UserRole.PATIENT,
         action: AuditAction.CREATE,
         resource: 'CITAS',
-        resourceId: insertRes.rows[0].id,
+        resourceId: appointment.id,
         patientId,
         ipAddress: req.ip || req.socket.remoteAddress || '127.0.0.1',
         details: { modality, appointmentDate }
@@ -440,12 +488,114 @@ export class ClinicalController {
 
       res.status(201).json({
         success: true,
-        message: 'Cita médica agendada correctamente.',
-        data: insertRes.rows[0]
+        message: '¡Cita médica agendada correctamente!',
+        data: {
+          ...appointment,
+          medico_nombre: docInfo.rows[0]?.medico_nombre || 'Especialista Hospital Santa Fe',
+          especialidad: docInfo.rows[0]?.especialidad || 'Medicina General',
+          codigo_confirmacion: 'CITA-' + appointment.id.slice(0, 8).toUpperCase()
+        }
       });
     } catch (err: any) {
       console.error('[APPOINTMENT ERROR] Error al agendar cita:', err);
       res.status(500).json({ success: false, message: 'Error al agendar cita: ' + err.message });
+    }
+  }
+
+  /**
+   * Actualizar Evaluación de Signos Vitales y Triaje Manchester (Enfermería)
+   * Endpoint: PATCH /api/clinical/appointments/:appointmentId/triage
+   */
+  public static async updateTriage(req: Request, res: Response): Promise<void> {
+    const actor = req.user!;
+    const { appointmentId } = req.params;
+    const {
+      bloodPressure,
+      heartRate,
+      respiratoryRate,
+      temperature,
+      oxygenSaturation,
+      triageLevel,
+      box,
+      observations,
+      weightKg,
+      heightCm,
+      bmi
+    } = req.body;
+
+    if (!appointmentId) {
+      res.status(400).json({ success: false, message: 'ID de cita requerido.' });
+      return;
+    }
+
+    try {
+      const statusMap: Record<string, string> = {
+        'ROJO': 'TRIAJE',
+        'NARANJA': 'TRIAJE',
+        'AMARILLO': 'EN_ESPERA',
+        'VERDE': 'EN_ESPERA',
+        'AZUL': 'EN_ESPERA'
+      };
+
+      const updateSql = `
+        UPDATE citas SET
+          presion_arterial = COALESCE($1, presion_arterial),
+          frecuencia_cardiaca = COALESCE($2, frecuencia_cardiaca),
+          frecuencia_respiratoria = COALESCE($3, frecuencia_respiratoria),
+          temperatura = COALESCE($4, temperatura),
+          saturacion_oxigeno = COALESCE($5, saturacion_oxigeno),
+          peso_kg = COALESCE($6, peso_kg),
+          talla_cm = COALESCE($7, talla_cm),
+          imc = COALESCE($8, imc),
+          estado_atencion = COALESCE($9, estado_atencion),
+          motivo = CASE WHEN $10::text IS NOT NULL THEN motivo || ' | ' || $10::text ELSE motivo END,
+          fecha_actualizacion = NOW()
+        WHERE id = $11
+        RETURNING *
+      `;
+
+      const dbRes = await pool.query(updateSql, [
+        bloodPressure || null,
+        heartRate ? parseInt(heartRate, 10) : null,
+        respiratoryRate ? parseInt(respiratoryRate, 10) : null,
+        temperature ? parseFloat(temperature) : null,
+        oxygenSaturation ? parseFloat(oxygenSaturation) : null,
+        weightKg ? parseFloat(weightKg) : null,
+        heightCm ? parseFloat(heightCm) : null,
+        bmi ? parseFloat(bmi) : null,
+        statusMap[triageLevel] || 'TRIAJE',
+        observations ? `Triaje ${triageLevel} (${box}): ${observations}` : null,
+        appointmentId
+      ]);
+
+      if (dbRes.rows.length === 0) {
+        res.status(404).json({ success: false, message: 'Cita no encontrada.' });
+        return;
+      }
+
+      const updatedAppointment = dbRes.rows[0];
+
+      // Auditoría inmutable
+      await auditService.log({
+        actorId: actor.userId,
+        actorEmail: actor.email,
+        actorRole: actor.role,
+        action: AuditAction.UPDATE,
+        resource: 'TRIAJE_MANCHESTER',
+        resourceId: appointmentId,
+        patientId: updatedAppointment.id_paciente,
+        ipAddress: req.ip || req.socket.remoteAddress || '127.0.0.1',
+        details: { triageLevel, box, bloodPressure, heartRate, temperature }
+      });
+
+      res.status(200).json({
+        success: true,
+        message: `Triaje Manchester (${triageLevel}) y signos vitales actualizados en Supabase.`,
+        data: updatedAppointment
+      });
+    } catch (err: any) {
+      console.error('[TRIAGE ERROR] Error al actualizar triaje:', err);
+      res.status(500).json({ success: false, message: 'Error al actualizar triaje: ' + err.message });
     }
   }
 

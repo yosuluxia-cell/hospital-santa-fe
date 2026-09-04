@@ -66,3 +66,26 @@ export const authenticateJWT = (
     return;
   }
 };
+
+/**
+ * Middleware de Autenticación Opcional
+ * Extrae req.user si el token está presente y es válido, pero no bloquea si la solicitud es anónima.
+ */
+export const optionalAuthJWT = (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+): void => {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, config.jwtSecret) as TokenPayload;
+      req.user = decoded;
+    } catch (_) {
+      // Continuar como solicitud pública sin autenticación
+    }
+  }
+  next();
+};
+
