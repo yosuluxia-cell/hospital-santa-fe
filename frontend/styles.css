@@ -1221,6 +1221,7 @@ body {
   justify-content: center;
   z-index: 100;
   padding: 1rem;
+  overflow-y: auto;
 }
 
 .modal-content {
@@ -1228,20 +1229,38 @@ body {
   border-radius: var(--radius-xl);
   max-width: 540px;
   width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   box-shadow: var(--shadow-elevated);
+  overflow: hidden;
+  position: relative;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
 }
 
 .modal-header {
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 .modal-body {
   padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: calc(90vh - 140px);
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-footer {
@@ -1251,6 +1270,37 @@ body {
   display: flex;
   justify-content: flex-end;
   gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Reglas específicas para Modal de Agendar Cita Médica */
+#modal-schedule .modal-content {
+  max-width: 540px;
+  width: 95%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#modal-schedule #form-schedule-appointment {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+#modal-schedule .modal-body {
+  overflow-y: auto;
+  max-height: calc(90vh - 145px);
+  padding: 1.25rem 1.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+#modal-schedule .modal-footer {
+  flex-shrink: 0;
+  background: #f8fafc;
+  border-top: 1px solid var(--border);
 }
 
 /* Pestañas */
@@ -1464,6 +1514,10 @@ body {
   .hero-clean-buttons { flex-direction: column; width: 100%; }
   .hero-clean-buttons .btn { width: 100%; }
   .unified-auth-card { padding: 1.75rem 1.25rem; }
+  .modal-backdrop { padding: 0.5rem; }
+  .modal-content { max-height: 95vh; width: 98%; }
+  .modal-body { padding: 1rem; max-height: calc(95vh - 130px); }
+  .modal-footer { padding: 0.85rem 1rem; }
 }
 
 /* ==========================================================================
